@@ -1,8 +1,18 @@
-<script setup></script>
+<script setup>
+import { useCounterStore } from "@/stores/counter";
+
+const counter = useCounterStore();
+</script>
 
 <template>
   <main>
-    <h2 class="text-2xl font-bold text-gray-900">Registered Events</h2>
+    <h2>Registered Events</h2>
+
+    <div>Current Count: {{ counter.count }}</div>
+    <button @click="counter.increment()" class="btn btn-primary">
+      increment
+    </button>
+    <button @click="counter.reset()" class="btn btn-primary">reset</button>
   </main>
 </template>
 

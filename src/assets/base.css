@@ -1,0 +1,8 @@
+/* 
+    ako je 1rem 16px (font size html elementa je 16px) a meni je navbar cca 72px, treba mi 4.5rem za body
+    kako navbar mi ne bi pokrio isti zbog fixed position property (
+    */
+/* body {
+  padding-top: 4.5rem;
+  background-color: silver;
+} */

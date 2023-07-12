@@ -3,36 +3,17 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container justify-content-start">
-      <!-- hambi meni -->
-      <button
-        class="navbar-toggler me-2"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <i class="bi bi-list"></i>
-      </button>
+      <!-- reminder; skraćeni logo ako bude trebalo. sakrij ovaj i zamijeni sa skraćenom verzijom -->
+      <RouterLink :to="{ name: 'Home' }" class="navbar-brand"
+        ><img
+          src="https://placeholder.pics/svg/32x33/4FFF3B-3969FF"
+          class="me-1"
+          alt="Showstarter Logo"
+        />
+        Showstarter
+      </RouterLink>
 
-      <!-- ako logo bude preveliki sakrij ovaj i stavi skraćenu verziju -->
-      <a class="navbar-brand" href="#">Showstarter</a>
-
-      <!-- premjesti u offcanvas -->
-      <div
-        class="collapse navbar-collapse flex-grow-0 order-3 order-lg-0"
-        id="navbarSupportedContent"
-      >
-        <ul class="navbar-nav mt-2 mt-lg-0 ps-4 ps-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="#">
-              <i class="bi bi-calendar-event me-2"></i>Organiziraj koncert
-            </a>
-          </li>
-        </ul>
-      </div>
-
+      <!-- search bar -->
       <form
         class="d-flex flex-grow-1 mx-auto mt-3 mt-md-0 px-2 order-2 order-sm-2"
         role="search"
@@ -55,7 +36,16 @@
         </div>
       </form>
 
-      <!--  -->
+      <!-- originalna prijava, napravi gumb za connect wallet i onda sa v-if ga zamijeni moj profil -->
+      <!-- <ul class="navbar-nav ms-auto order-1 order-md-2">
+        <li class="nav-item">
+          <button type="button" class="btn btn-outline-primary">
+            Spoji novčanik <i class="bi bi-person-circle"></i>
+          </button>
+        </li>
+      </ul> -->
+
+      <!-- profil offcanvas gumb -->
       <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
@@ -69,15 +59,7 @@
         </li>
       </ul>
 
-      <!-- originalna prijava, napravi gumb za connect wallet i onda sa v-if ga zamijeni moj profil -->
-      <!-- <ul class="navbar-nav ms-auto order-1 order-md-2">
-        <li class="nav-item">
-          <button type="button" class="btn btn-outline-primary">
-            Moje ulaznice <i class="bi bi-person-circle"></i>
-          </button>
-        </li>
-      </ul> -->
-
+      <!-- profil offcanvas -->
       <div
         class="offcanvas-xxl offcanvas-end"
         tabindex="-1"
@@ -85,7 +67,7 @@
         aria-labelledby="offcanvasExampleLabel"
       >
         <div class="offcanvas-header justify-content-start">
-          <i class="bi bi-person-circle me-3"></i>
+          <i class="bi bi-person-circle me-3" style="font-size: 3rem"></i>
           <h5 class="offcanvas-title" id="offcanvasExampleLabel">
             0x732f28...E113612D
           </h5>
@@ -98,10 +80,20 @@
           ></button>
         </div>
         <div class="offcanvas-body">
-          <div>
-            Some text as placeholder. In real life you can have the elements you
-            have chosen. Like, text, images, lists, etc.
-          </div>
+          <ul class="navbar-nav ps-4">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="#">
+                <i class="bi bi-ticket-perforated me-2"></i>Moje ulaznice
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ps-4">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="#">
+                <i class="bi bi-calendar-event me-2"></i>Organiziraj koncert
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

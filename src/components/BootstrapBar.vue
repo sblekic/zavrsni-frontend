@@ -1,4 +1,12 @@
-<script setup></script>
+<script setup>
+import { storeToRefs } from "pinia";
+import { useWalletStore } from "@/stores/wallet";
+const wallet = useWalletStore();
+// koristim store to ref kako ne bih izgubio reactivity walleta na ovoj komponenti
+// tj, kada se nešto mijenja u walletu želim da se ta promjena ažurira i ovdje
+const { state, isWrongNetwork } = storeToRefs(wallet);
+const { connectWallet, disconnect, changeNetwork } = useWalletStore();
+</script>
 
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -37,18 +45,26 @@
       </form>
 
       <!-- originalna prijava, napravi gumb za connect wallet i onda sa v-if ga zamijeni moj profil -->
-      <!-- <ul class="navbar-nav ms-auto order-1 order-md-2">
+      <ul
+        v-if="!state.isConnected"
+        class="navbar-nav ms-auto order-1 order-md-2"
+      >
         <li class="nav-item">
-          <button type="button" class="btn btn-outline-primary">
+          <button
+            v-on:click="connectWallet"
+            type="button"
+            class="btn btn-outline-primary"
+          >
             Spoji novčanik <i class="bi bi-person-circle"></i>
           </button>
         </li>
-      </ul> -->
+      </ul>
 
       <!-- profil offcanvas gumb -->
-      <ul class="navbar-nav ms-auto order-1 order-md-2">
+      <ul v-else class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
+            v-on:click="disconnect"
             type="button"
             class="btn btn-outline-primary"
             data-bs-toggle="offcanvas"

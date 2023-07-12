@@ -64,7 +64,6 @@ const { connectWallet, disconnect, changeNetwork } = useWalletStore();
       <ul v-else class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
-            v-on:click="disconnect"
             type="button"
             class="btn btn-outline-primary"
             data-bs-toggle="offcanvas"

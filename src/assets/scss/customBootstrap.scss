@@ -9,4 +9,4 @@ $custom-grid-breakpoints: (
 $grid-breakpoints: map-merge($grid-breakpoints, $custom-grid-breakpoints);
 
 // glavni bootstrap import
-@import "~/bootstrap/scss/bootstrap.scss";
+@import "~/bootstrap/scss/bootstrap";

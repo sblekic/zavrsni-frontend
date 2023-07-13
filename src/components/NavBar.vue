@@ -2,7 +2,7 @@
 
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container justify-content-start">
+    <div class="container-fluid justify-content-start">
       <!-- reminder; skraćeni logo ako bude trebalo. sakrij ovaj i zamijeni sa skraćenom verzijom -->
       <RouterLink :to="{ name: 'Home' }" class="navbar-brand"
         ><img
@@ -15,7 +15,7 @@
 
       <!-- search bar -->
       <form
-        class="d-flex flex-grow-1 mx-auto mt-3 mt-md-0 px-2 order-2 order-sm-2"
+        class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 mt-3 mt-md-0 px-2 order-2 order-sm-2"
         role="search"
       >
         <div class="input-group">
@@ -37,7 +37,7 @@
       </form>
 
       <!-- gumb prijave -->
-      <ul class="navbar-nav ms-auto order-1 order-md-2">
+      <!-- <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
             v-on:click="connectWallet"
@@ -47,7 +47,7 @@
             Spoji novčanik <i class="bi bi-person-circle"></i>
           </button>
         </li>
-      </ul>
+      </ul> -->
 
       <!-- profil offcanvas gumb -->
       <ul class="navbar-nav ms-auto order-1 order-md-2">

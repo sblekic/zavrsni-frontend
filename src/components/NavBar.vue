@@ -65,7 +65,7 @@
 
       <!-- profil offcanvas -->
       <div
-        class="offcanvas-xxl offcanvas-end"
+        class="offcanvas-xxxl offcanvas-end"
         tabindex="-1"
         id="offcanvasExample"
         aria-labelledby="offcanvasExampleLabel"

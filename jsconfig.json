@@ -1,12 +1,12 @@
-// https://code.visualstudio.com/docs/languages/jsconfig
-// https://youtrack.jetbrains.com/issue/WEB-55332/Vite-aliases-in-viteconfig-support
-// ovo sam dodao jer mi @ alias za ./src nije radio kako treba
+// https://plainenglish.io/blog/how-to-set-up-path-resolving-in-vite-ad284e0d9eae
+// autocomplete kod korištenja aliasa
 {
   "compilerOptions": {
     "jsx": "preserve",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "~/*": ["node_modules/*"]
     }
   }
 }

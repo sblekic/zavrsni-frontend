@@ -1,10 +1,12 @@
-// custom varijable
-// deklarirane su iznad importa zbog toga što bootstrap varijable imaju !default flag,
-// odnosno ako određena varijabla nema custom dodijeljenu vrijednost poprimiti će onu defaultnu
-// primjer: primary po defaultu je plava boja, ako ne definiram drugačije, tako će i biti.
-$primary: chartreuse;
+@import "~/bootstrap/scss/_functions";
+@import "~/bootstrap/scss/_variables";
 
-// import scss svih bootstrap komponenti. Cilj je overwrite varijabli u ovoj datoteci
-// kako ne bih dirao glavnu datoteku. Ovo radim zbog lakšeg rollback-a i zbog toga što bi
-// se promjene izbrisala kod ažuriranja bootstrap paketa
-@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
+$custom-grid-breakpoints: (
+  //fix za offcanvas bug, rezolucija preko 8k
+  xxxl: 7685px
+);
+
+$grid-breakpoints: map-merge($grid-breakpoints, $custom-grid-breakpoints);
+
+// glavni bootstrap import
+@import "~/bootstrap/scss/bootstrap.scss";

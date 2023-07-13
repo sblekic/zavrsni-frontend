@@ -18,10 +18,10 @@ export const useCounterStore = defineStore(
     //piniaPluginPersistedstate - option to enable persisted storage with default settings
     //default settings available at the plugins page.
     //persists the login state on refresh
-    persist: true,
+    persist: false,
   }
 );
-//hot module replacement; changes in store are hot reloaded
+//hot module replacement; changes in store are hot reloaded -> ne moram refreshati stranicu kada mijenjam kod u komponentama
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useCounterStore, import.meta.hot));
 }

@@ -2,6 +2,7 @@
 import { useCounterStore } from "@/stores/counter";
 
 const counter = useCounterStore();
+counter.count++;
 </script>
 
 <template>

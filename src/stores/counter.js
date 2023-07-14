@@ -18,7 +18,7 @@ export const useCounterStore = defineStore(
     //piniaPluginPersistedstate - option to enable persisted storage with default settings
     //default settings available at the plugins page.
     //persists the login state on refresh
-    persist: false,
+    persist: true,
   }
 );
 //hot module replacement; changes in store are hot reloaded -> ne moram refreshati stranicu kada mijenjam kod u komponentama

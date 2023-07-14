@@ -1,4 +1,17 @@
-<script setup></script>
+<script setup>
+import { MetaMaskSDK } from "@metamask/sdk";
+const MMSDK = new MetaMaskSDK();
+
+async function test() {
+  const ethereum = MMSDK.getProvider();
+  ethereum.request({ method: "eth_requestAccounts", params: [] });
+  // let metamask = await window.ethereum.request({
+  //   method: "eth_requestAccounts",
+  // });
+  // log.metamask;
+  console.log("sup");
+}
+</script>
 
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -37,17 +50,17 @@
       </form>
 
       <!-- gumb prijave -->
-      <!-- <ul class="navbar-nav ms-auto order-1 order-md-2">
+      <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
-            v-on:click="connectWallet"
+            v-on:click="test"
             type="button"
             class="btn btn-outline-primary"
           >
             Spoji novčanik <i class="bi bi-person-circle"></i>
           </button>
         </li>
-      </ul> -->
+      </ul>
 
       <!-- profil offcanvas gumb -->
       <ul class="navbar-nav ms-auto order-1 order-md-2">

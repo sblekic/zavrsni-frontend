@@ -2,12 +2,11 @@
 import { useCounterStore } from "@/stores/counter";
 
 const counter = useCounterStore();
-counter.count++;
 </script>
 
 <template>
   <main>
-    <div class="container border border-success">
+    <div class="container-fluid border border-success">
       <h2>Registered Events</h2>
 
       <div>Current Count: {{ counter.count }}</div>

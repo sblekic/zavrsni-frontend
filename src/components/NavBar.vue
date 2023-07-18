@@ -1,47 +1,23 @@
 <script setup>
 // import { MetaMaskSDK } from "@metamask/sdk";
 import { BrowserProvider } from "ethers";
-import { SiweMessage } from "siwe";
 
 // const MMSDK = new MetaMaskSDK();
 const provider = new BrowserProvider(window.ethereum);
 
-const domain = window.location.host;
-const origin = window.location.origin;
-
-function createSiweMessage(address, statement) {
-  const message = new SiweMessage({
-    domain,
-    address,
-    statement,
-    uri: origin,
-    version: "1",
-    chainId: 1,
-  });
-  return message.prepareMessage();
-}
-
 async function connectWallet() {
   // const ethereum = MMSDK.getProvider(); // isto što i window.ethereum
   try {
-    window.ethereum.request({ method: "eth_requestAccounts", params: [] });
+    await window.ethereum.request({
+      method: "eth_requestAccounts",
+      params: [],
+    });
   } catch (error) {
     // user rejected the request - code 4001; uncaught promise. Probao sam sve moguće kombinacije ali catch ne uhvati error kada user izađe iz connection screen.
     // mislim da je razlog to što MM sdk renderira modal napisan u react-u preko kojeg se započinje request za spajanje walleta, i valjda u taj modal nema error handling?
     // mogao bih se spojiti na običan način ali onda gubim funkcionalnost na mobile
-    console.error(error);
+    console.log(error);
   }
-}
-
-async function test() {
-  try {
-    const signer = await provider.getSigner();
-    // const message = createSiweMessage(
-    //   signer.address,
-    //   "Sign in with Ethereum to the app."
-    // );
-    // console.log(await signer.signMessage(message));
-  } catch (error) {}
 }
 </script>
 
@@ -85,7 +61,7 @@ async function test() {
       <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
-            v-on:click="test"
+            v-on:click="connectWallet"
             type="button"
             class="btn btn-outline-primary"
           >

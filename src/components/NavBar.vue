@@ -1,21 +1,15 @@
 <script setup>
-// import { MetaMaskSDK } from "@metamask/sdk";
 import { BrowserProvider } from "ethers";
-
-// const MMSDK = new MetaMaskSDK();
 const provider = new BrowserProvider(window.ethereum);
 
 async function connectWallet() {
-  // const ethereum = MMSDK.getProvider(); // isto što i window.ethereum
   try {
     await window.ethereum.request({
       method: "eth_requestAccounts",
       params: [],
     });
   } catch (error) {
-    // user rejected the request - code 4001; uncaught promise. Probao sam sve moguće kombinacije ali catch ne uhvati error kada user izađe iz connection screen.
-    // mislim da je razlog to što MM sdk renderira modal napisan u react-u preko kojeg se započinje request za spajanje walleta, i valjda u taj modal nema error handling?
-    // mogao bih se spojiti na običan način ali onda gubim funkcionalnost na mobile
+    // u slučaju odbijenog zahtjeva
     console.log(error);
   }
 }

@@ -45,7 +45,10 @@ async function connectWallet() {
 }
 
 async function disconnect() {
-  await Auth.logOut();
+  // await Auth.logOut();
+  const signer = await provider.getSigner();
+
+  const signature = await signer.signMessage("test");
 }
 </script>
 
@@ -85,7 +88,7 @@ async function disconnect() {
         </div>
       </form>
 
-      <button class="btn btn-primary" @click="disconnect">logout</button>
+      <button class="btn btn-primary" @click="disconnect">test</button>
       <!-- gumb prijave -->
       <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">

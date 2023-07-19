@@ -4,14 +4,18 @@ import { Posts } from "@/services";
 let test = ref();
 
 async function fetchPosts() {
-  test.value = await Posts.getAll();
+  try {
+    test.value = await Posts.getAll();
+  } catch (error) {
+    console.log(error);
+  }
 }
 </script>
 
 <template>
   <main>
     <button @click="fetchPosts">testiraj funkciju</button>
-    <p>{{ test[2] }}</p>
+    <p v-if="test">{{ test[2] }}</p>
   </main>
 </template>
 

@@ -1,17 +1,51 @@
 <script setup>
 import { BrowserProvider } from "ethers";
+import { Auth } from "@/services";
 const provider = new BrowserProvider(window.ethereum);
+
+// window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+// // eth_accounts always returns an array.
+// function handleAccountsChanged(accounts) {
+//   if (accounts.length === 0) {
+//     // MetaMask is locked or the user has not connected any accounts.
+//     console.log('Please connect to MetaMask.');
+//   } else if (accounts[0] !== currentAccount) {
+//     // Reload your interface with accounts[0].
+//     currentAccount = accounts[0];
+//     // Update the account displayed (see the HTML for the connect button)
+//     showAccount.innerHTML = currentAccount;
+//   }
+// }
 
 async function connectWallet() {
   try {
-    await window.ethereum.request({
-      method: "eth_requestAccounts",
-      params: [],
-    });
+    const [address] = await provider.send("eth_requestAccounts", []);
+    // console.log(address);
+
+    // const chainId = await provider.send("eth_chainId");
+    // console.log(chainId);
+
+    // chain = polygon mumbai
+    const userData = { address, chain: 80001 };
+    // console.log(userData);
+
+    const signer = await provider.getSigner();
+    const message = await Auth.requestMessage(userData);
+
+    const signature = await signer.signMessage(message);
+    // console.log(message);
+    // console.log(signature);
+
+    await Auth.verifySignature(message, signature);
   } catch (error) {
     // u slučaju odbijenog zahtjeva
     console.log(error);
   }
+}
+
+async function disconnect() {
+  await Auth.logOut();
 }
 </script>
 
@@ -51,6 +85,7 @@ async function connectWallet() {
         </div>
       </form>
 
+      <button class="btn btn-primary" @click="disconnect">logout</button>
       <!-- gumb prijave -->
       <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">

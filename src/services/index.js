@@ -3,7 +3,7 @@ import axios from "axios";
 // instanciranje axios-a
 let Backend = axios.create({
   baseURL: "http://localhost:3000/",
-  timeout: 1000,
+  timeout: 7000,
 });
 
 // naš objekt za sve pozive koji se dotiču `Post`ova
@@ -23,4 +23,30 @@ let Posts = {
     return posts;
   },
 };
-export { Backend, Posts }; // exportamo Service za ručne pozive ili Posts za metode;
+
+let Auth = {
+  async requestMessage(userData) {
+    let { data } = await Backend.post("/request-message", userData, {
+      headers: { "Content-Type": "application/json" },
+    });
+    // console.log(data);
+    let message = data.message;
+    return message;
+  },
+
+  async verifySignature(message, signature) {
+    await Backend.post(
+      "/verify",
+      {
+        message,
+        signature,
+      },
+      { withCredentials: true }
+    );
+  },
+
+  async logOut() {
+    await Backend.get("/logout", { withCredentials: true });
+  },
+};
+export { Backend, Posts, Auth }; // Backend za ručne pozive ostalo za api endpoints;

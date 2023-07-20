@@ -67,7 +67,7 @@ async function disconnect() {
 
       <!-- search bar -->
       <form
-        class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 mt-3 mt-md-0 px-2 order-2 order-sm-2"
+        class="col-12 col-md-6 col-lg-5 col-xl-4 col-xxl-3 mt-3 mt-md-0 px-2 order-2 order-sm-2"
         role="search"
       >
         <div class="input-group">
@@ -88,7 +88,15 @@ async function disconnect() {
         </div>
       </form>
 
-      <button class="btn btn-primary" @click="disconnect">test</button>
+      <ul class="navbar-nav mx-2 d-none d-lg-block">
+        <li class="nav-item">
+          <a class="nav-link" href="">
+            <i class="bi bi-calendar-event me-2"></i> Organiziraj koncert
+          </a>
+        </li>
+      </ul>
+      <!-- <button class="btn btn-primary" @click="disconnect">test</button> -->
+
       <!-- gumb prijave -->
       <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
@@ -97,13 +105,13 @@ async function disconnect() {
             type="button"
             class="btn btn-outline-primary"
           >
-            Spoji novčanik <i class="bi bi-person-circle"></i>
+            <i class="bi bi-cash-stack"></i> Spoji novčanik
           </button>
         </li>
       </ul>
 
       <!-- profil offcanvas gumb -->
-      <ul class="navbar-nav ms-auto order-1 order-md-2">
+      <!-- <ul class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
             type="button"
@@ -114,7 +122,7 @@ async function disconnect() {
             <i class="bi bi-person-circle"></i> Moj profil
           </button>
         </li>
-      </ul>
+      </ul> -->
 
       <!-- profil offcanvas -->
       <div
@@ -144,7 +152,7 @@ async function disconnect() {
               </a>
             </li>
           </ul>
-          <ul class="navbar-nav ps-4">
+          <ul class="navbar-nav ps-4 d-lg-none">
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="#">
                 <i class="bi bi-calendar-event me-2"></i>Organiziraj koncert

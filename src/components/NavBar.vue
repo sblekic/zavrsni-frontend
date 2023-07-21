@@ -1,6 +1,10 @@
 <script setup>
 import { BrowserProvider } from "ethers";
 import { Auth } from "@/services";
+import { useWalletStore } from "@/stores/wallet";
+import { Modal } from "bootstrap/dist/js/bootstrap.js";
+
+const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
 
 // window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -21,34 +25,48 @@ const provider = new BrowserProvider(window.ethereum);
 async function connectWallet() {
   try {
     const [address] = await provider.send("eth_requestAccounts", []);
-    // console.log(address);
-
-    // const chainId = await provider.send("eth_chainId");
-    // console.log(chainId);
-
-    // chain = polygon mumbai
-    const userData = { address, chain: 80001 };
-    // console.log(userData);
-
-    const signer = await provider.getSigner();
-    const message = await Auth.requestMessage(userData);
-
-    const signature = await signer.signMessage(message);
-    // console.log(message);
-    // console.log(signature);
-
-    await Auth.verifySignature(message, signature);
+    // upravljanje DOM-a na temelju MM adrese.
+    wallet.user = address;
+    wallet.isConnected = true;
   } catch (error) {
     // u slučaju odbijenog zahtjeva
     console.log(error);
   }
 }
 
-async function disconnect() {
-  // await Auth.logOut();
-  const signer = await provider.getSigner();
+function closeAuthModal() {
+  const modalEl = document.getElementById("authModal");
+  const modal = Modal.getInstance(modalEl);
+  modal.hide();
+  modalEl.addEventListener("hidden.bs.modal", (event) => {
+    modal.dispose();
+  });
+  // // alternativa ako ovo gore ne radi. kliknem gumb modal-a da se zatvori
+  // const modalEl = document.getElementById("closeAuthModal");
+  // modalEl.click();
+}
 
-  const signature = await signer.signMessage("test");
+async function authenticateUser() {
+  try {
+    // chain = polygon mumbai
+    const userData = { address: wallet.user, chain: 80001 };
+    console.log(userData);
+
+    const signer = await provider.getSigner();
+    const message = await Auth.requestMessage(userData);
+    const signature = await signer.signMessage(message);
+    const res = await Auth.verifySignature(message, signature);
+    closeAuthModal();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function disconnect() {
+  // brisanje jwt cookie
+  await Auth.logOut();
+  // reset localHost
+  wallet.$reset();
 }
 </script>
 
@@ -98,12 +116,17 @@ async function disconnect() {
       <!-- <button class="btn btn-primary" @click="disconnect">test</button> -->
 
       <!-- gumb prijave -->
-      <ul class="navbar-nav ms-auto order-1 order-md-2">
+      <ul
+        v-if="!wallet.isConnected"
+        class="navbar-nav ms-auto order-1 order-md-2"
+      >
         <li class="nav-item">
           <button
             v-on:click="connectWallet"
             type="button"
             class="btn btn-outline-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#authModal"
           >
             <i class="bi bi-cash-stack"></i> Spoji novčanik
           </button>
@@ -111,7 +134,7 @@ async function disconnect() {
       </ul>
 
       <!-- profil offcanvas gumb -->
-      <!-- <ul class="navbar-nav ms-auto order-1 order-md-2">
+      <ul v-else class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
             type="button"
@@ -122,7 +145,53 @@ async function disconnect() {
             <i class="bi bi-person-circle"></i> Moj profil
           </button>
         </li>
-      </ul> -->
+      </ul>
+
+      <!-- Modal za potpis -->
+      <div class="modal fade" id="authModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+              <!-- <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Modal title
+              </h1> -->
+              <button
+                id="closeAuthModal"
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div
+              class="modal-body px-5 d-flex justify-content-center text-center"
+            >
+              <div class="d-flex flex-column">
+                <div>
+                  <img
+                    src="https://placeholder.pics/svg/64x64/FFB121"
+                    alt="Metamask Logo"
+                  />
+                  <h1>wassup ma neighbor</h1>
+                  <p>
+                    Potpiši se za prijavu na svoj showStarter račun. Postupak je
+                    besplatan pošto ne zahtjeva blockhain transakciju
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                @click="authenticateUser"
+                type="button"
+                class="btn btn-primary flex-grow-1"
+              >
+                Potpiši se
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- profil offcanvas -->
       <div
@@ -144,7 +213,7 @@ async function disconnect() {
             aria-label="Close"
           ></button>
         </div>
-        <div class="offcanvas-body">
+        <div class="offcanvas-body primary">
           <ul class="navbar-nav ps-4">
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="#">
@@ -159,6 +228,17 @@ async function disconnect() {
               </a>
             </li>
           </ul>
+
+          <div class="d-flex">
+            <button
+              @click="disconnect"
+              data-bs-dismiss="offcanvas"
+              data-bs-target="#offcanvasExample"
+              class="btn btn-primary flex-grow-1"
+            >
+              Odjava
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -6,7 +6,8 @@ import App from "./App.vue";
 import router from "./router";
 
 import "./assets/css/customBootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.js";
+// vrati ovo ako bootstrap šteka
+// import "bootstrap/dist/js/bootstrap.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 const app = createApp(App);

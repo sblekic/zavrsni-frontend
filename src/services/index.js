@@ -2,7 +2,7 @@ import axios from "axios";
 
 // instanciranje axios-a
 let Backend = axios.create({
-  baseURL: "http://localhost:3000/",
+  baseURL: "http://192.168.1.101:3000/",
   timeout: 7000,
 });
 

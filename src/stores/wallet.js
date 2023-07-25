@@ -5,6 +5,7 @@ export const useWalletStore = defineStore("wallet", {
   state: () => ({
     //frontend; use for v-if blocks, display content if user is logged in
     isConnected: false,
+    isAuthWarning: true,
     user: "",
     chainId: "",
     //frontend; ako želim izbaciti warning da je user na krivom bc-u

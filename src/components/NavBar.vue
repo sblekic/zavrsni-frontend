@@ -3,24 +3,34 @@ import { BrowserProvider } from "ethers";
 import { Auth } from "@/services";
 import { useWalletStore } from "@/stores/wallet";
 import { Modal } from "bootstrap/dist/js/bootstrap.js";
+import { onUnmounted } from "vue";
 
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
 
-// window.ethereum.on('accountsChanged', handleAccountsChanged);
+// event listener za hendlanje promjena spojenih računa. emit svaki put kada se vracena vrijednost metode eth_accounts mijenja
+window.ethereum.on("accountsChanged", handleAccountsChanged);
 
-// // eth_accounts always returns an array.
-// function handleAccountsChanged(accounts) {
-//   if (accounts.length === 0) {
-//     // MetaMask is locked or the user has not connected any accounts.
-//     console.log('Please connect to MetaMask.');
-//   } else if (accounts[0] !== currentAccount) {
-//     // Reload your interface with accounts[0].
-//     currentAccount = accounts[0];
-//     // Update the account displayed (see the HTML for the connect button)
-//     showAccount.innerHTML = currentAccount;
-//   }
-// }
+// accounts = eth_accounts
+function handleAccountsChanged(accounts) {
+  console.log("accountsChanged event emitted");
+  console.log(accounts);
+  if (accounts.length === 0) {
+    console.log(
+      "MetaMask is locked or the user has not connected any accounts."
+    );
+    disconnect();
+  } else if (accounts[0] !== wallet.user) {
+    // azuriranje localStorage sa aktualnim userom. eth_accounts na prvom mjestu stavlja adresu koja se trenutno koristi
+    wallet.user = accounts[0];
+  }
+}
+
+// removal of event listeners
+onUnmounted(() => {
+  console.log("unMount");
+  ethereum.removeListener("accountsChanged", handleAccountsChanged);
+});
 
 async function connectWallet() {
   try {
@@ -50,22 +60,30 @@ async function authenticateUser() {
   try {
     // chain = polygon mumbai
     const userData = { address: wallet.user, chain: 80001 };
-    console.log(userData);
-
     const signer = await provider.getSigner();
     const message = await Auth.requestMessage(userData);
     const signature = await signer.signMessage(message);
     const res = await Auth.verifySignature(message, signature);
-    closeAuthModal();
+    if (res.status === 200) {
+      console.log("authentication successful 🥳");
+      wallet.isAuthWarning = false;
+      if (document.getElementById("authModal")) {
+        closeAuthModal();
+      }
+    }
   } catch (error) {
-    console.log(error);
+    if (error.code === "ACTION_REJECTED") {
+      console.log("why u no auth? 😒 user rejected MM message signing process");
+    } else {
+      console.log(error);
+    }
   }
 }
 
 async function disconnect() {
   // brisanje jwt cookie
   await Auth.logOut();
-  // reset localHost
+  // reset localHost/pinia wallet
   wallet.$reset();
 }
 </script>
@@ -113,7 +131,6 @@ async function disconnect() {
           </a>
         </li>
       </ul>
-      <!-- <button class="btn btn-primary" @click="disconnect">test</button> -->
 
       <!-- gumb prijave -->
       <ul
@@ -133,7 +150,7 @@ async function disconnect() {
         </li>
       </ul>
 
-      <!-- profil offcanvas gumb -->
+      <!-- Moj profil offcanvas gumb -->
       <ul v-else class="navbar-nav ms-auto order-1 order-md-2">
         <li class="nav-item">
           <button
@@ -142,7 +159,11 @@ async function disconnect() {
             data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasExample"
           >
-            <i class="bi bi-person-circle"></i> Moj profil
+            <i class="bi bi-person-circle me-1"></i> Moj profil
+            <i
+              v-if="wallet.isAuthWarning"
+              class="bi bi-exclamation-square ms-1"
+            ></i>
           </button>
         </li>
       </ul>
@@ -169,13 +190,15 @@ async function disconnect() {
               <div class="d-flex flex-column">
                 <div>
                   <img
+                    class="mb-3"
                     src="https://placeholder.pics/svg/64x64/FFB121"
                     alt="Metamask Logo"
                   />
-                  <h1>wassup ma neighbor</h1>
-                  <p>
-                    Potpiši se za prijavu na svoj showStarter račun. Postupak je
-                    besplatan pošto ne zahtjeva blockhain transakciju
+                  <h1 class="m-4">Dobrodošao!</h1>
+                  <p class="m-0 lead">
+                    Potpiši se za prijavu na svoj showStarter račun. Valjan
+                    potpis dokazuje da si legitiman vlasnik ove adrese. Postupak
+                    je besplatan pošto ne zahtjeva blockhain transakciju.
                   </p>
                 </div>
               </div>
@@ -193,14 +216,15 @@ async function disconnect() {
         </div>
       </div>
 
-      <!-- profil offcanvas -->
+      <!-- Moj profil offcanvas -->
       <div
         class="offcanvas-xxxl offcanvas-end"
         tabindex="-1"
         id="offcanvasExample"
         aria-labelledby="offcanvasExampleLabel"
       >
-        <div class="offcanvas-header justify-content-start">
+        <!-- offcanvas header -->
+        <div class="d-flex align-items-center px-3 pt-3">
           <i class="bi bi-person-circle me-3" style="font-size: 3rem"></i>
           <h5 class="offcanvas-title" id="offcanvasExampleLabel">
             0x732f28...E113612D
@@ -213,23 +237,37 @@ async function disconnect() {
             aria-label="Close"
           ></button>
         </div>
-        <div class="offcanvas-body primary">
-          <ul class="navbar-nav ps-4">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="#">
-                <i class="bi bi-ticket-perforated me-2"></i>Moje ulaznice
-              </a>
-            </li>
-          </ul>
-          <ul class="navbar-nav ps-4 d-lg-none">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="#">
-                <i class="bi bi-calendar-event me-2"></i>Organiziraj koncert
-              </a>
-            </li>
-          </ul>
+        <div v-if="wallet.isAuthWarning" class="px-3 text-danger">
+          <i class="bi bi-exclamation-square me-1"></i>
+          Prijava nije dovršena
+        </div>
 
-          <div class="d-flex">
+        <!-- offcanvas body -->
+        <div class="offcanvas-body primary">
+          <div class="d-flex my-1">
+            <button class="btn btn-primary flex-grow-1">
+              <i class="bi bi-ticket-perforated me-2"></i>Moje ulaznice
+            </button>
+          </div>
+
+          <div class="d-flex my-1 d-lg-none">
+            <button class="btn btn-primary flex-grow-1">
+              <i class="bi bi-calendar-event me-2"></i>Organiziraj koncert
+            </button>
+          </div>
+
+          <div class="d-flex my-1">
+            <button
+              v-if="wallet.isAuthWarning"
+              @click="authenticateUser"
+              type="button"
+              class="btn btn-warning flex-grow-1"
+            >
+              Dovrši prijavu
+            </button>
+          </div>
+
+          <div class="d-flex my-1">
             <button
               @click="disconnect"
               data-bs-dismiss="offcanvas"

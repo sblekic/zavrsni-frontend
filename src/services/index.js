@@ -35,14 +35,15 @@ let Auth = {
   },
 
   async verifySignature(message, signature) {
-    await Backend.post(
+    let res = await Backend.post(
       "/verify",
       {
         message,
         signature,
       },
-      { withCredentials: true }
+      { withCredentials: true } // what is dis?
     );
+    return res;
   },
 
   async logOut() {

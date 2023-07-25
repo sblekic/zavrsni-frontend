@@ -61,16 +61,17 @@ async function authenticateUser() {
     // chain = polygon mumbai
     const userData = { address: wallet.user, chain: 80001 };
     const signer = await provider.getSigner();
-    const message = await Auth.requestMessage(userData);
+    // const message = await Auth.requestMessage(userData);
+    const message = "test poruka";
     const signature = await signer.signMessage(message);
-    const res = await Auth.verifySignature(message, signature);
-    if (res.status === 200) {
-      console.log("authentication successful 🥳");
-      wallet.isAuthWarning = false;
-      if (document.getElementById("authModal")) {
-        closeAuthModal();
-      }
-    }
+    // const res = await Auth.verifySignature(message, signature);
+    // if (res.status === 200) {
+    //   console.log("authentication successful 🥳");
+    //   wallet.isAuthWarning = false;
+    //   if (document.getElementById("authModal")) {
+    //     closeAuthModal();
+    //   }
+    // }
   } catch (error) {
     if (error.code === "ACTION_REJECTED") {
       console.log("why u no auth? 😒 user rejected MM message signing process");

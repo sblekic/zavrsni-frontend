@@ -1,8 +1,6 @@
 <script setup>
 import { useCounterStore } from "@/stores/counter";
-import { useWalletStore } from "@/stores/wallet";
 
-const wallet = useWalletStore();
 const counter = useCounterStore();
 </script>
 
@@ -16,8 +14,6 @@ const counter = useCounterStore();
         increment
       </button>
       <button @click="counter.reset()" class="btn btn-primary">reset</button>
-
-      <div class="mt-4">contents of wallet store: {{ wallet }}</div>
     </div>
   </main>
 </template>

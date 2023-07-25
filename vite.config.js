@@ -12,4 +12,7 @@ export default defineConfig({
       "~": path.resolve(__dirname, "./node_modules"),
     },
   },
+  build: {
+    minify: false,
+  },
 });

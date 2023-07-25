@@ -82,7 +82,7 @@ async function authenticateUser() {
 
 async function disconnect() {
   // brisanje jwt cookie
-  await Auth.logOut();
+  // await Auth.logOut();
   // reset localHost/pinia wallet
   wallet.$reset();
 }

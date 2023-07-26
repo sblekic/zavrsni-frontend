@@ -86,6 +86,11 @@ async function disconnect() {
   // reset localHost/pinia wallet
   wallet.$reset();
 }
+
+async function jwt() {
+  res = await Auth.auth();
+  console.log(res);
+}
 </script>
 
 <template>
@@ -131,7 +136,7 @@ async function disconnect() {
           </a>
         </li>
       </ul>
-
+      <button class="btn btn-primary" @click="jwt">test jwt</button>
       <!-- gumb prijave -->
       <ul
         v-if="!wallet.isConnected"

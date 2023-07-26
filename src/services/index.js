@@ -49,5 +49,10 @@ let Auth = {
   async logOut() {
     await Backend.get("/logout", { withCredentials: true });
   },
+
+  async auth() {
+    let res = await Backend.get("/authenticate", { withCredentials: true });
+    return res;
+  },
 };
 export { Backend, Posts, Auth }; // Backend za ručne pozive ostalo za api endpoints;

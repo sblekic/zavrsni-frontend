@@ -88,7 +88,7 @@ async function disconnect() {
 }
 
 async function jwt() {
-  res = await Auth.auth();
+  let res = await Auth.auth();
   console.log(res);
 }
 </script>

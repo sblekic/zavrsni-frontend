@@ -2,7 +2,7 @@ import axios from "axios";
 
 // instanciranje axios-a
 let Backend = axios.create({
-  baseURL: "http://192.168.1.101:3000/",
+  baseURL: "https://showstarter-api.onrender.com/",
   timeout: 7000,
 });
 

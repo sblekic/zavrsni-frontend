@@ -8,6 +8,8 @@ import { onUnmounted } from "vue";
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
 
+console.log(import.meta.env.VITE_AXIOS_URL);
+
 // ako metamask nije instaliran ode cijela stranica
 if (window.ethereum) {
   // event listener za hendlanje promjena spojenih računa. emit svaki put kada se vracena vrijednost metode eth_accounts mijenja

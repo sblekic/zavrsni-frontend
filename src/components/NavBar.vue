@@ -8,8 +8,11 @@ import { onUnmounted } from "vue";
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
 
-// event listener za hendlanje promjena spojenih računa. emit svaki put kada se vracena vrijednost metode eth_accounts mijenja
-window.ethereum.on("accountsChanged", handleAccountsChanged);
+// ako metamask nije instaliran ode cijela stranica
+if (window.ethereum) {
+  // event listener za hendlanje promjena spojenih računa. emit svaki put kada se vracena vrijednost metode eth_accounts mijenja
+  window.ethereum.on("accountsChanged", handleAccountsChanged);
+} else console.log("no mm detected");
 
 // accounts = eth_accounts
 function handleAccountsChanged(accounts) {
@@ -44,6 +47,12 @@ async function connectWallet() {
   }
 }
 
+function getAuthModal() {
+  const modalEl = document.getElementById("authModal");
+  const modal = Modal.getInstance(modalEl);
+  return modal;
+}
+
 function closeAuthModal() {
   const modalEl = document.getElementById("authModal");
   const modal = Modal.getInstance(modalEl);
@@ -67,7 +76,7 @@ async function authenticateUser() {
     if (res.status === 200) {
       console.log("authentication successful 🥳");
       wallet.isAuthWarning = false;
-      if (document.getElementById("authModal")) {
+      if (getAuthModal()._isShown) {
         closeAuthModal();
       }
     }

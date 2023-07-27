@@ -3,6 +3,7 @@ import axios from "axios";
 // instanciranje axios-a
 let Backend = axios.create({
   baseURL: "https://showstarter-api.onrender.com/",
+  // baseURL: "http://localhost:3000/",
   timeout: 7000,
 });
 
@@ -41,7 +42,7 @@ let Auth = {
         message,
         signature,
       },
-      { withCredentials: true } // what is dis?
+      { withCredentials: true } // potrebno za primiti/poslati credentials (u mom slučaju cookies) iz response / u request
     );
     return res;
   },

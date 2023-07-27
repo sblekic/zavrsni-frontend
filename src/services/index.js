@@ -2,8 +2,7 @@ import axios from "axios";
 
 // instanciranje axios-a
 let Backend = axios.create({
-  baseURL: "https://showstarter-api.onrender.com/",
-  // baseURL: "http://localhost:3000/",
+  baseURL: import.meta.env.VITE_AXIOS_URL,
   timeout: 7000,
 });
 

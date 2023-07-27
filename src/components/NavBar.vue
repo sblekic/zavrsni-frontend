@@ -76,7 +76,7 @@ async function authenticateUser() {
     if (res.status === 200) {
       console.log("authentication successful 🥳");
       wallet.isAuthWarning = false;
-      if (getAuthModal()._isShown) {
+      if (getAuthModal()) {
         closeAuthModal();
       }
     }

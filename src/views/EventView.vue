@@ -4,8 +4,4 @@
   <main>Detalji o eventu</main>
 </template>
 
-<style scoped>
-main {
-  margin: 5vh;
-}
-</style>
+<style scoped></style>

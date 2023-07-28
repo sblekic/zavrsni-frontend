@@ -106,8 +106,8 @@ async function disconnect() {
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid justify-content-start">
+  <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary">
+    <div class="container justify-content-start">
       <!-- reminder; skraćeni logo ako bude trebalo. sakrij ovaj i zamijeni sa skraćenom verzijom -->
       <RouterLink :to="{ name: 'Home' }" class="navbar-brand"
         ><img
@@ -120,7 +120,7 @@ async function disconnect() {
 
       <!-- search bar -->
       <form
-        class="col-12 col-md-6 col-lg-5 col-xl-4 col-xxl-3 mt-3 mt-md-0 px-2 order-2 order-sm-2"
+        class="col-12 col-md-6 col-lg-5 col-xl-4 col-xxl-4 mt-3 mt-md-0 px-2 order-2 order-sm-2"
         role="search"
       >
         <div class="input-group">
@@ -143,9 +143,9 @@ async function disconnect() {
 
       <ul class="navbar-nav mx-2 d-none d-lg-block">
         <li class="nav-item">
-          <a class="nav-link" href="">
+          <RouterLink :to="{ name: 'CreateEvent' }" class="nav-link">
             <i class="bi bi-calendar-event me-2"></i> Organiziraj koncert
-          </a>
+          </RouterLink>
         </li>
       </ul>
 
@@ -268,9 +268,14 @@ async function disconnect() {
           </div>
 
           <div class="d-flex my-1 d-lg-none">
-            <button class="btn btn-primary flex-grow-1">
-              <i class="bi bi-calendar-event me-2"></i>Organiziraj koncert
-            </button>
+            <RouterLink
+              :to="{ name: 'CreateEvent' }"
+              class="btn btn-primary flex-grow-1"
+              data-bs-dismiss="offcanvas"
+              data-bs-target="#offcanvasExample"
+            >
+              <i class="bi bi-calendar-event me-2"></i> Organiziraj koncert
+            </RouterLink>
           </div>
 
           <div class="d-flex my-1">

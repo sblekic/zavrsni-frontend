@@ -5,6 +5,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import App from "./App.vue";
 import router from "./router";
 
+import "@/assets/css/main.css";
 import "./assets/css/customBootstrap.min.css";
 // vrati ovo ako bootstrap šteka
 // import "bootstrap/dist/js/bootstrap.js";

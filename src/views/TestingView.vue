@@ -19,8 +19,4 @@ async function fetchPosts() {
   </main>
 </template>
 
-<style scoped>
-main {
-  margin: 5vh;
-}
-</style>
+<style scoped></style>

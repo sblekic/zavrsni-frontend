@@ -6,7 +6,7 @@ const counter = useCounterStore();
 
 <template>
   <main>
-    <div class="container-fluid border border-success">
+    <div class="container border border-success">
       <h2>Registered Events</h2>
 
       <div>Current Count: {{ counter.count }}</div>
@@ -18,8 +18,4 @@ const counter = useCounterStore();
   </main>
 </template>
 
-<style scoped>
-main {
-  margin: 5vh;
-}
-</style>
+<style scoped></style>

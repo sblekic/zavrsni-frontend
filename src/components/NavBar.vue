@@ -58,10 +58,16 @@ function getAuthModal() {
 function closeAuthModal() {
   const modalEl = document.getElementById("authModal");
   const modal = Modal.getInstance(modalEl);
-  modal.hide();
-  modalEl.addEventListener("hidden.bs.modal", (event) => {
-    modal.dispose();
-  });
+  try {
+    modal.hide();
+    modalEl.addEventListener("hidden.bs.modal", (event) => {
+      modal.dispose();
+    });
+  } catch (error) {
+    // zna izbaciti grešku da je modal backdrop null ili nešto
+    console.log("čisto da uhvatim error ali radi ok inače ", error);
+  }
+
   // // alternativa ako ovo gore ne radi. kliknem gumb modal-a da se zatvori
   // const modalEl = document.getElementById("closeAuthModal");
   // modalEl.click();
@@ -96,11 +102,6 @@ async function disconnect() {
   await Auth.logOut();
   // reset localHost/pinia wallet
   wallet.$reset();
-}
-
-async function jwt() {
-  let res = await Auth.auth();
-  console.log(res);
 }
 </script>
 
@@ -147,7 +148,7 @@ async function jwt() {
           </a>
         </li>
       </ul>
-      <button class="btn btn-primary" @click="jwt">test jwt</button>
+
       <!-- gumb prijave -->
       <ul
         v-if="!wallet.isConnected"

@@ -9,7 +9,7 @@ let Backend = axios.create({
 // naš objekt za sve pozive koji se dotiču `Post`ova
 let Posts = {
   async getAll() {
-    let response = await Backend.get("/posts");
+    let response = await Backend.get("/posts", { withCredentials: true });
     let posts = response.data.map((doc) => {
       return {
         id: doc.id,
@@ -26,7 +26,7 @@ let Posts = {
 
 let Auth = {
   async requestMessage(userData) {
-    let { data } = await Backend.post("/request-message", userData, {
+    let { data } = await Backend.post("/auth/request-message", userData, {
       headers: { "Content-Type": "application/json" },
     });
     // console.log(data);
@@ -36,7 +36,7 @@ let Auth = {
 
   async verifySignature(message, signature) {
     let res = await Backend.post(
-      "/verify",
+      "/auth/verify",
       {
         message,
         signature,
@@ -47,7 +47,7 @@ let Auth = {
   },
 
   async logOut() {
-    await Backend.get("/logout", { withCredentials: true });
+    await Backend.get("/auth/logout", { withCredentials: true });
   },
 
   async auth() {

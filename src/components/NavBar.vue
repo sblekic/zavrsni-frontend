@@ -8,7 +8,10 @@ import { onUnmounted } from "vue";
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
 
-console.log(import.meta.env.VITE_AXIOS_URL);
+console.log(
+  "test da provjerim ako netlify prepozna env var",
+  import.meta.env.VITE_AXIOS_URL
+);
 
 // ako metamask nije instaliran ode cijela stranica
 if (window.ethereum) {
@@ -185,54 +188,6 @@ async function disconnect() {
         </li>
       </ul>
 
-      <!-- Modal za potpis -->
-      <div class="modal fade" id="authModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header border-bottom-0">
-              <!-- <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Modal title
-              </h1> -->
-              <button
-                id="closeAuthModal"
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div
-              class="modal-body px-5 d-flex justify-content-center text-center"
-            >
-              <div class="d-flex flex-column">
-                <div>
-                  <img
-                    class="mb-3"
-                    src="https://placeholder.pics/svg/64x64/FFB121"
-                    alt="Metamask Logo"
-                  />
-                  <h1 class="m-4">Dobrodošao!</h1>
-                  <p class="m-0 lead">
-                    Potpiši se za prijavu na svoj showStarter račun. Valjan
-                    potpis dokazuje da si legitiman vlasnik ove adrese. Postupak
-                    je besplatan pošto ne zahtjeva blockhain transakciju.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                @click="authenticateUser"
-                type="button"
-                class="btn btn-primary flex-grow-1"
-              >
-                Potpiši se
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Moj profil offcanvas -->
       <div
         class="offcanvas-xxxl offcanvas-end"
@@ -303,6 +258,49 @@ async function disconnect() {
       </div>
     </div>
   </nav>
+  <!-- Modal za potpis odnosno auth -->
+  <!-- modal je izvan navbara jer mu smeta sticky position navbara -->
+  <div class="modal fade" id="authModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0">
+          <button
+            id="closeAuthModal"
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body px-5 d-flex justify-content-center text-center">
+          <div class="d-flex flex-column">
+            <div>
+              <img
+                class="mb-3"
+                src="https://placeholder.pics/svg/64x64/FFB121"
+                alt="Metamask Logo"
+              />
+              <h1 class="m-4">Dobrodošao!</h1>
+              <p class="m-0 lead">
+                Potpiši se za prijavu na svoj showStarter račun. Valjan potpis
+                dokazuje da si legitiman vlasnik ove adrese. Postupak je
+                besplatan pošto ne zahtjeva blockhain transakciju.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            @click="authenticateUser"
+            type="button"
+            class="btn btn-primary flex-grow-1"
+          >
+            Potpiši se
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style></style>

@@ -24,6 +24,26 @@ let Posts = {
   },
 };
 
+let Venues = {
+  async getVenues(searchTerm) {
+    try {
+      let options = {};
+
+      if (searchTerm) {
+        options.params = {
+          venue: searchTerm,
+        };
+      }
+
+      let res = await Backend.get("/venues", options);
+      let venues = res.data;
+      return venues;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+};
+
 let Auth = {
   async requestMessage(userData) {
     let { data } = await Backend.post("/auth/request-message", userData, {
@@ -55,4 +75,4 @@ let Auth = {
     return res;
   },
 };
-export { Backend, Posts, Auth }; // Backend za ručne pozive ostalo za api endpoints;
+export { Backend, Posts, Auth, Venues }; // Backend za ručne pozive ostalo za api endpoints;

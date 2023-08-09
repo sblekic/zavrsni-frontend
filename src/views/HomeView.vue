@@ -2,7 +2,6 @@
 import { useCounterStore } from "@/stores/counter";
 import EventFactory from "@/assets/abi/EventFactory";
 import { BrowserProvider, Contract } from "ethers";
-import { ref } from "vue";
 
 const provider = new BrowserProvider(window.ethereum);
 
@@ -11,25 +10,25 @@ let eventId = null;
 function logEventId() {
   console.log(eventId);
 }
-
 async function getContract() {
   let signer = await provider.getSigner();
   let contract = new Contract(
-    import.meta.env.VITE_CONTRACT_ADDRESS,
+    EventFactory.contractAddress,
     EventFactory.abi,
     signer
   );
 
-  contract.once("EventCreated", (res) => {
-    console.log("event listener radi");
-    console.log("return value je: ", res);
-    eventId = Number(res);
+  contract.once("EventCreated", (log) => {
+    console.log("Novi event kreiran na adresu: ", log);
+    eventId = log;
   });
 
-  await contract.createEvent({
-    name: "prvi event",
-    price: 44,
-  });
+  await contract.createEvent(
+    { name: "land of", start: 1694368800, end: 1694379600 },
+    ["GA", "VIP"],
+    [500, 100],
+    [55, 140]
+  );
 }
 
 const counter = useCounterStore();

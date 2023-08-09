@@ -28,6 +28,3 @@ coverage
 *.sw?
 
 .env.*
-
-# makni ovo kada smisliš kako hendlat abi na frontu
-src/assets/abi

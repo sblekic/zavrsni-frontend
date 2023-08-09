@@ -1,0 +1,101 @@
+{
+  "contractAddress": "0x9645Bd554E99883d7D9995c12Fec3Ce037952Fe2",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_eventLogic",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "EventCreated",
+      "type": "event"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint32",
+              "name": "start",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "end",
+              "type": "uint32"
+            }
+          ],
+          "internalType": "struct IEventImplementation.EventData",
+          "name": "_eventData",
+          "type": "tuple"
+        },
+        {
+          "internalType": "string[]",
+          "name": "ticketTypes",
+          "type": "string[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "supplies",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "prices",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "createEvent",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getEventBeacon",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]
+}

@@ -31,13 +31,33 @@ let Venues = {
 
       if (searchTerm) {
         options.params = {
-          venue: searchTerm,
+          _any: searchTerm,
         };
       }
 
       let res = await Backend.get("/venues", options);
       let venues = res.data;
       return venues;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+};
+
+let Artists = {
+  async getArtists(searchTerm) {
+    try {
+      let options = {};
+
+      if (searchTerm) {
+        options.params = {
+          _any: searchTerm,
+        };
+      }
+
+      let res = await Backend.get("/artists", options);
+      let artists = res.data;
+      return artists;
     } catch (error) {
       console.log(error);
     }
@@ -75,4 +95,4 @@ let Auth = {
     return res;
   },
 };
-export { Backend, Posts, Auth, Venues }; // Backend za ručne pozive ostalo za api endpoints;
+export { Backend, Posts, Auth, Venues, Artists }; // Backend za ručne pozive ostalo za api endpoints;

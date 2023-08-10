@@ -7,39 +7,78 @@ import "flatpickr/dist/flatpickr.css";
 import _ from "lodash";
 import { Dropdown } from "bootstrap/dist/js/bootstrap.js";
 import { vOnClickOutside } from "@vueuse/components";
-import { Venues } from "@/services";
+import { Venues, Artists } from "@/services";
 
 const provider = new BrowserProvider(window.ethereum);
 
 let venues = ref({ isNotFound: false });
+let artistList = ref({ isNotFound: false });
 
 const formData = reactive({
-  eventName: [],
+  eventName: "",
   venue: "",
-  artists: null,
+  artists: [{ name: "", show: true }],
   genre: null,
   start: null,
   end: null,
-  ticketType: [],
-  ticketSupply: [],
-  ticketPrice: [],
+  tickets: [{ ticketType: "", ticketSupply: 0, ticketPrice: 0, show: true }],
 });
 
 let bsVenueDropdown;
+let bsArtistDropdown;
 
 // dinamicko pretrazivanje prostora
 watch(
   () => formData.venue,
   _.debounce(async (venueName) => {
-    if (venueName.length > 2) {
+    if (venueName.length > 1) {
       await fetchVenues(venueName);
     } else bsVenueDropdown.hide();
   }, 500)
 );
 
+watch(
+  () => formData.artists,
+  _.debounce(async (artistsRef) => {
+    // watch gleda svaku promjenu u cijelom polju a meni treba samo ime izvođaća
+    // json funkcije su ovdje zbog toga što mi watcher vraća cijeli proxy pa moram nekako izvući vrijednosti
+    // koristim pop jer mi treba zadnji uneseni
+    let currArtist = JSON.parse(JSON.stringify(artistsRef)).pop().name;
+
+    if (currArtist.length > 1) {
+      await fetchArtists(currArtist);
+    } else bsArtistDropdown.hide();
+  }, 500),
+  { deep: true }
+);
+
+async function fetchArtists(searchTerm) {
+  artistList.value = await Artists.getArtists(searchTerm);
+  if (artistList.value.length > 0) {
+    // zbog watchera funkcija ce se pokrenuti kako god, pa nakon sto je prostor odabran putem selectVenues treba mi grananje gdje se ne radi ništa
+    if (artistList.value[0].name === searchTerm) return;
+    // prvi prikaz dropdowna nakon što je utipkano 3 slova (postavljeno u watcher )
+    else bsArtistDropdown.show();
+  } else {
+    // ako nema rezultata obavijesti korisnika
+    artistList.value = { isNotFound: true };
+    bsArtistDropdown.show();
+  }
+}
+
+function selectVenue(selection) {
+  formData.venue = selection;
+  bsVenueDropdown.hide();
+}
+
 onMounted(() => {
   initDatetimePicker();
   bsVenueDropdown = Dropdown.getOrCreateInstance("#venueDropdown", {
+    // default je dynamic pa zbog toga bs smjesti dropdown tamo gdje ja ne želim, sa static pojavi se odmah ispod input
+    display: "static",
+  });
+  bsArtistDropdown = Dropdown.getOrCreateInstance("#artistDropdown", {
+    // default je dynamic pa zbog toga bs smjesti dropdown tamo gdje ja ne želim, sa static pojavi se odmah ispod input
     display: "static",
   });
 });
@@ -56,34 +95,22 @@ function initDatetimePicker() {
   });
 }
 
-function getDropdown() {
-  // const dropdownInstance = Dropdown.getOrCreateInstance("#venueDropdown");
-  // bsVenueDropdown.toggle();
-  // console.log(bsVenueDropdown._isShown());
-}
-
-function closeVenueDropdown() {
-  bsVenueDropdown.hide();
+function closeDropdown() {
+  // fundd
+  const dropdownElementList = document.querySelectorAll(".dropdown-menu");
+  const dropdownList = [...dropdownElementList].map((dropdownToggleEl) =>
+    Dropdown.getOrCreateInstance(dropdownToggleEl)
+  );
+  dropdownList.forEach((el) => el.hide());
+  // console.log(dropdownList);
 }
 
 async function fetchVenues(searchTerm) {
-  console.log("raw response", await Venues.getVenues(searchTerm));
-  // console.log("dropdown element", bsVenueDropdown);
-
   venues.value = await Venues.getVenues(searchTerm);
-
-  // console.log("Response backenda ", venues.value[0].name);
-  console.log("Upisani search term ", searchTerm);
-  console.log("Duzina polja iz res ", venues.value.length);
-
   if (venues.value.length > 0) {
     // zbog watchera funkcija ce se pokrenuti kako god, pa nakon sto je prostor odabran putem selectVenze treba mi grananje gdje se ne radi ništa
     if (venues.value[0].name === searchTerm) return;
-    // prostor nije odabran iz liste ali prikazi drop
-    // else if (!bsVenueDropdown._isShown()) {
-    //   console.log("ovo mi je bitno");
-    //   document.getElementById("dropdownButton").click();
-    // }
+    // prvi prikaz dropdowna nakon što je utipkano 3 slova (postavljeno u watcher )
     else bsVenueDropdown.show();
   } else {
     // ako nema rezultata obavijesti korisnika
@@ -92,10 +119,11 @@ async function fetchVenues(searchTerm) {
   }
 }
 
-function selectVenue(selection) {
-  console.log("Odabrano iz liste prostora: ", selection);
-  formData.venue = selection;
-  bsVenueDropdown.hide();
+function selectArtist(selection) {
+  const index = formData.artists.length - 1;
+  formData.artists[index].name = selection.name;
+  formData.artists[index].address = selection.address;
+  bsArtistDropdown.hide();
 }
 
 async function createEvent() {
@@ -133,18 +161,21 @@ function previousForm() {
   let [eventForm] = document.getElementsByClassName("event-form");
   eventForm.classList.remove("d-none");
 }
+
+function addArtist(index) {
+  formData.artists.push({ name: "", show: true });
+  formData.artists[index].show = false;
+}
+
+function removeArtist(index) {
+  formData.artists.splice(index, 1);
+}
 </script>
 
 <template>
   <main>
     <div class="container px-4">
       {{ formData }}
-      <button class="btn btn-primary" @click="fetchVenues()">
-        fetch venues
-      </button>
-      <button class="btn btn-primary ms-2" @click="getDropdown()">
-        get dropdown
-      </button>
       <div class="d-flex mb-4 justify-content-center">
         <h1 class="">Organiziraj koncert</h1>
       </div>
@@ -152,7 +183,7 @@ function previousForm() {
       <div class="event-form row">
         <!-- form left col; event data -->
         <div class="col">
-          <div class="row">
+          <div class="row g-3">
             <!-- form elements -->
             <div class="col-12">
               <label for="inputImeEventa" class="form-label"
@@ -165,21 +196,20 @@ function previousForm() {
                 id="inputImeEventa"
               />
             </div>
-            <div class="col-12">
+            <!-- odabir prostora -->
+            <div class="col-12 mb">
               <!-- lista prostora -->
-              <div class="dropdown position-relative" id="venueDropdown">
+              <div class="dropdown" id="venueDropdown">
                 <label for="inputProstor" class="form-label">Prostor</label>
                 <input
                   v-model="formData.venue"
                   type="text"
                   class="form-control"
                   id="inputProstor"
+                  placeholder="Pretraži iz liste prostora"
                 />
 
-                <ul
-                  class="dropdown-menu w-100 mt-1"
-                  v-on-click-outside="closeVenueDropdown"
-                >
+                <ul class="dropdown-menu position-relative w-100 mt-1">
                   <li v-if="!venues.isNotFound" v-for="venue in venues">
                     <button
                       class="dropdown-item"
@@ -196,15 +226,72 @@ function previousForm() {
                 </ul>
               </div>
             </div>
+
+            <!-- odabir izvodaca -->
             <div class="col-12">
-              <label for="inputIzvodac" class="form-label">Izvođač</label>
-              <input
-                v-model="formData.artists"
-                type="text"
-                class="form-control"
-                id="inputIzvodac"
-              />
+              <label class="form-label">Izvođači</label>
+
+              <div
+                v-for="(artist, index) in formData.artists"
+                class="input-group mb-2"
+              >
+                <input
+                  v-if="artist.show"
+                  v-model="artist.name"
+                  type="text"
+                  class="form-control"
+                  :id="`inputIzvodac-${index}`"
+                  placeholder="Pretraži iz liste izvođača"
+                />
+                <input
+                  v-else
+                  v-model="artist.name"
+                  type="text"
+                  class="form-control"
+                  :id="`inputIzvodac-${index}`"
+                  placeholder="Pretraži iz liste izvođača"
+                  disabled
+                />
+                <button
+                  v-if="artist.show"
+                  @click="addArtist(index)"
+                  class="btn btn-outline-primary rounded-end"
+                  type="button"
+                >
+                  +
+                </button>
+                <button
+                  v-else
+                  @click="removeArtist(index)"
+                  class="btn btn-outline-danger rounded-end"
+                  type="button"
+                >
+                  X
+                </button>
+              </div>
+              <div class="dropdown">
+                <ul
+                  v-on-click-outside="closeDropdown"
+                  class="dropdown-menu position-relative w-100 mt-1"
+                  id="artistDropdown"
+                >
+                  <li
+                    v-if="!artistList.isNotFound"
+                    v-for="artist in artistList"
+                  >
+                    <button class="dropdown-item" @click="selectArtist(artist)">
+                      {{ artist.name }}
+                    </button>
+                  </li>
+                  <li v-else>
+                    <button class="dropdown-item disabled">
+                      Nema pronađenih rezultata
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </div>
+
             <div class="col-12 flatpickr">
               <label for="inputPocetak" class="form-label">Početak</label>
               <input
@@ -216,6 +303,7 @@ function previousForm() {
                 data-input
               />
             </div>
+
             <div class="col-12 flatpickr">
               <label for="inputKraj" class="form-label">Kraj</label>
               <input
@@ -227,6 +315,7 @@ function previousForm() {
                 data-input
               />
             </div>
+
             <div class="col-12">
               <label for="inputZanr" class="form-label">Žanr glazbe</label>
               <input
@@ -234,13 +323,15 @@ function previousForm() {
                 type="text"
                 class="form-control"
                 id="inputZanr"
+                placeholder="Pretraži iz liste žanrova"
               />
             </div>
           </div>
         </div>
+
         <!-- form right col; picture upload -->
         <div
-          class="col-sm-12 col-lg d-flex flex-column mt-md-3 justify-content-center"
+          class="col-sm-12 col-lg d-flex flex-column mt-md-3 mt-4 justify-content-center"
         >
           <div class="text-center">
             <p>Poster</p>
@@ -270,19 +361,17 @@ function previousForm() {
         <div class="col">
           <div class="row">
             <!-- form elements -->
-            <div class="col-12">
+            <div class="col-6">
               <label for="inputNazivUlaznice" class="form-label"
                 >Naziv ulaznice</label
               >
               <input type="text" class="form-control" id="inputNazivUlaznice" />
             </div>
-            <div class="col-12">
-              <label for="inputBrUlaznica" class="form-label"
-                >Broj dostupnih ulaznica</label
-              >
+            <div class="col-3">
+              <label for="inputBrUlaznica" class="form-label">Količina</label>
               <input type="text" class="form-control" id="inputBrUlaznica" />
             </div>
-            <div class="col-12">
+            <div class="col-3">
               <label for="inputCijena" class="form-label">Cijena</label>
               <input type="text" class="form-control" id="inputCijena" />
             </div>

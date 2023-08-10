@@ -13,6 +13,10 @@ const provider = new BrowserProvider(window.ethereum);
 
 let venues = ref({ isNotFound: false });
 let artistList = ref({ isNotFound: false });
+let venueCapacity = 0;
+
+let ticketSupply = ref("");
+let currVenueCapacity = ref("");
 
 const formData = reactive({
   eventName: "",
@@ -21,11 +25,29 @@ const formData = reactive({
   genre: null,
   start: null,
   end: null,
-  tickets: [{ ticketType: "", ticketSupply: 0, ticketPrice: 0, show: true }],
+  tickets: [{ type: "", supply: 0, price: "", show: true }],
 });
 
 let bsVenueDropdown;
 let bsArtistDropdown;
+
+// dinamicko racunanje preostalih mjesta u prostoru
+// helper koji prikazuje korisniku preostala mjesta u prostoru pri definiranju količina karata po kategoriji
+watch(ticketSupply, (newValue) => {
+  // error catch ako je input prazan
+  if (!isNaN(parseInt(newValue))) {
+    formData.tickets.forEach((el) => {
+      newValue = parseInt(newValue) + parseInt(el.supply);
+    });
+    currVenueCapacity.value = venueCapacity - newValue;
+  } else {
+    let temp = 0;
+    formData.tickets.forEach((el) => {
+      temp = parseInt(temp) + parseInt(el.supply);
+    });
+    currVenueCapacity.value = venueCapacity - temp;
+  }
+});
 
 // dinamicko pretrazivanje prostora
 watch(
@@ -51,20 +73,6 @@ watch(
   }, 500),
   { deep: true }
 );
-
-async function fetchArtists(searchTerm) {
-  artistList.value = await Artists.getArtists(searchTerm);
-  if (artistList.value.length > 0) {
-    // zbog watchera funkcija ce se pokrenuti kako god, pa nakon sto je prostor odabran putem selectVenues treba mi grananje gdje se ne radi ništa
-    if (artistList.value[0].name === searchTerm) return;
-    // prvi prikaz dropdowna nakon što je utipkano 3 slova (postavljeno u watcher )
-    else bsArtistDropdown.show();
-  } else {
-    // ako nema rezultata obavijesti korisnika
-    artistList.value = { isNotFound: true };
-    bsArtistDropdown.show();
-  }
-}
 
 function selectVenue(selection) {
   formData.venue = selection;
@@ -108,14 +116,32 @@ function closeDropdown() {
 async function fetchVenues(searchTerm) {
   venues.value = await Venues.getVenues(searchTerm);
   if (venues.value.length > 0) {
-    // zbog watchera funkcija ce se pokrenuti kako god, pa nakon sto je prostor odabran putem selectVenze treba mi grananje gdje se ne radi ništa
-    if (venues.value[0].name === searchTerm) return;
+    // ako sam odabrao iz liste onda searchTerm ce biti isti kao i vrijednost iz baze
+    if (venues.value[0].name === searchTerm) {
+      venueCapacity = venues.value[0].capacity;
+      currVenueCapacity.value = venues.value[0].capacity;
+      return;
+    }
     // prvi prikaz dropdowna nakon što je utipkano 3 slova (postavljeno u watcher )
     else bsVenueDropdown.show();
   } else {
     // ako nema rezultata obavijesti korisnika
     venues.value = { isNotFound: true };
     bsVenueDropdown.show();
+  }
+}
+
+async function fetchArtists(searchTerm) {
+  artistList.value = await Artists.getArtists(searchTerm);
+  if (artistList.value.length > 0) {
+    // zbog watchera funkcija ce se pokrenuti kako god, pa nakon sto je prostor odabran putem selectVenues treba mi grananje gdje se ne radi ništa
+    if (artistList.value[0].name === searchTerm) return;
+    // prvi prikaz dropdowna nakon što je utipkano 3 slova (postavljeno u watcher )
+    else bsArtistDropdown.show();
+  } else {
+    // ako nema rezultata obavijesti korisnika
+    artistList.value = { isNotFound: true };
+    bsArtistDropdown.show();
   }
 }
 
@@ -126,25 +152,24 @@ function selectArtist(selection) {
   bsArtistDropdown.hide();
 }
 
-async function createEvent() {
-  let signer = await provider.getSigner();
-  let contract = new Contract(
-    EventFactory.contractAddress,
-    EventFactory.abi,
-    signer
-  );
+function addArtist(index) {
+  formData.artists.push({ name: "", show: true });
+  formData.artists[index].show = false;
+}
 
-  contract.once("EventCreated", (log) => {
-    console.log("Novi event kreiran na adresu: ", log);
-    eventId = log;
-  });
+function removeArtist(index) {
+  formData.artists.splice(index, 1);
+}
 
-  // await contract.createEvent(
-  //   { name: "land of", start: 1694368800, end: 1694379600 },
-  //   ["GA", "VIP"],
-  //   [500, 100],
-  //   [55, 140]
-  // );
+function addTicket(index) {
+  formData.tickets[index].supply = ticketSupply.value;
+  formData.tickets.push({ type: "", supply: 0, price: "", show: true });
+  ticketSupply.value = "";
+  formData.tickets[index].show = false;
+}
+
+function removeTicket(index) {
+  formData.tickets.splice(index, 1);
 }
 
 function nextForm() {
@@ -162,13 +187,26 @@ function previousForm() {
   eventForm.classList.remove("d-none");
 }
 
-function addArtist(index) {
-  formData.artists.push({ name: "", show: true });
-  formData.artists[index].show = false;
-}
+async function createEvent() {
+  let signer = await provider.getSigner();
+  let contract = new Contract(
+    EventFactory.contractAddress,
+    EventFactory.abi,
+    signer
+  );
 
-function removeArtist(index) {
-  formData.artists.splice(index, 1);
+  contract.once("EventCreated", (log) => {
+    console.log("Novi event kreiran na adresu: ", log);
+    eventId = log;
+  });
+  console.log(signer);
+
+  // await contract.createEvent(
+  //   { name: "land of", start: 1694368800, end: 1694379600 },
+  //   ["GA", "VIP"],
+  //   [500, 100],
+  //   [55, 140]
+  // );
 }
 </script>
 
@@ -176,6 +214,8 @@ function removeArtist(index) {
   <main>
     <div class="container px-4">
       {{ formData }}
+
+      {{ venueCapacity }}
       <div class="d-flex mb-4 justify-content-center">
         <h1 class="">Organiziraj koncert</h1>
       </div>
@@ -258,7 +298,7 @@ function removeArtist(index) {
                   class="btn btn-outline-primary rounded-end"
                   type="button"
                 >
-                  +
+                  <i class="bi bi-plus-lg"></i>
                 </button>
                 <button
                   v-else
@@ -266,7 +306,7 @@ function removeArtist(index) {
                   class="btn btn-outline-danger rounded-end"
                   type="button"
                 >
-                  X
+                  <i class="bi bi-x-lg"></i>
                 </button>
               </div>
               <div class="dropdown">
@@ -292,6 +332,7 @@ function removeArtist(index) {
               </div>
             </div>
 
+            <!-- pocetak eventa -->
             <div class="col-12 flatpickr">
               <label for="inputPocetak" class="form-label">Početak</label>
               <input
@@ -304,6 +345,7 @@ function removeArtist(index) {
               />
             </div>
 
+            <!-- kraj eventa -->
             <div class="col-12 flatpickr">
               <label for="inputKraj" class="form-label">Kraj</label>
               <input
@@ -313,17 +355,6 @@ function removeArtist(index) {
                 id="inputKraj"
                 placeholder="Odaberi datum i vrijeme.."
                 data-input
-              />
-            </div>
-
-            <div class="col-12">
-              <label for="inputZanr" class="form-label">Žanr glazbe</label>
-              <input
-                v-model="formData.genre"
-                type="text"
-                class="form-control"
-                id="inputZanr"
-                placeholder="Pretraži iz liste žanrova"
               />
             </div>
           </div>
@@ -359,38 +390,101 @@ function removeArtist(index) {
       <div class="ticket-form row d-none">
         <!-- form left col; ticket data -->
         <div class="col">
-          <div class="row">
+          <div v-for="(ticket, index) in formData.tickets" class="row mb-3">
             <!-- form elements -->
-            <div class="col-6">
+            <!-- naziv ulaznice -->
+            <div class="col-lg-6 col-12">
               <label for="inputNazivUlaznice" class="form-label"
                 >Naziv ulaznice</label
               >
-              <input type="text" class="form-control" id="inputNazivUlaznice" />
+              <input
+                v-if="ticket.show"
+                v-model="ticket.type"
+                type="text"
+                class="form-control"
+                id="inputNazivUlaznice"
+              />
+              <input
+                v-else
+                v-model="ticket.type"
+                type="text"
+                class="form-control"
+                id="inputNazivUlaznice"
+                disabled
+              />
             </div>
-            <div class="col-3">
+
+            <!-- kolicina -->
+            <div class="col-lg-3">
               <label for="inputBrUlaznica" class="form-label">Količina</label>
-              <input type="text" class="form-control" id="inputBrUlaznica" />
+              <div class="input-group">
+                <input
+                  v-if="ticket.show"
+                  v-model="ticketSupply"
+                  type="text"
+                  class="form-control"
+                  id="inputBrUlaznica"
+                />
+                <input
+                  v-else
+                  :placeholder="ticket.supply"
+                  type="text"
+                  class="form-control"
+                  id="inputBrUlaznica"
+                  disabled
+                />
+                <input
+                  v-if="ticket.show"
+                  type="text"
+                  class="form-control"
+                  :placeholder="currVenueCapacity"
+                  disabled
+                />
+                <input v-else type="text" class="form-control" disabled />
+              </div>
             </div>
-            <div class="col-3">
+
+            <!-- cijena -->
+            <div class="col-lg-3">
               <label for="inputCijena" class="form-label">Cijena</label>
-              <input type="text" class="form-control" id="inputCijena" />
+              <div class="input-group">
+                <input
+                  v-if="ticket.show"
+                  v-model="ticket.price"
+                  type="text"
+                  class="form-control rounded-end"
+                  id="inputCijena"
+                />
+                <input
+                  v-else
+                  v-model="ticket.price"
+                  type="text"
+                  class="form-control rounded-end"
+                  id="inputCijena"
+                  disabled
+                />
+                <button
+                  v-if="ticket.show"
+                  @click="addTicket(index)"
+                  class="btn btn-outline-primary ms-3 rounded-start"
+                >
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+                <button
+                  v-else
+                  @click="removeTicket(index)"
+                  class="btn btn-outline-danger ms-3 rounded-start"
+                >
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
             </div>
-            <!-- <div class="col-12">
-              <label for="inputDostupnostOd" class="form-label"
-                >Dostupne od</label
-              >
-              <input type="text" class="form-control" id="inputDostupnostOd" />
-            </div>
-            <div class="col-12">
-              <label for="inputDostupnostDo" class="form-label"
-                >Dostupne do</label
-              >
-              <input type="text" class="form-control" id="inputDostupnostDo" />
-            </div> -->
           </div>
         </div>
         <!-- form right col; nft picture upload -->
-        <div class="col-sm-12 col-md d-flex flex-column justify-content-center">
+        <div
+          class="col-sm-12 col-md d-flex flex-column justify-content-center mt-4 mt-md-0"
+        >
           <div class="text-center">
             <p>Ilustracija NFT-a</p>
             <img src="https://placeholder.pics/svg/200x300" />
@@ -402,7 +496,7 @@ function removeArtist(index) {
           <button @click="previousForm" class="btn btn-primary">
             <i class="bi bi-caret-left"></i> Nazad
           </button>
-          <button @click="" class="btn btn-primary ms-2">
+          <button @click="createEvent" class="btn btn-primary ms-2">
             Kreiraj događaj
           </button>
         </div>
@@ -413,7 +507,7 @@ function removeArtist(index) {
             <button @click="previousForm" class="btn btn-primary">
               <i class="bi bi-caret-left"></i> Nazad
             </button>
-            <button @click="" class="btn btn-primary mt-2">
+            <button @click="createEvent" class="btn btn-primary mt-2">
               Kreiraj događaj
             </button>
           </div>

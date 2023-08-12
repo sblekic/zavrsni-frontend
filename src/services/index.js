@@ -24,6 +24,16 @@ let Posts = {
   },
 };
 
+let Events = {
+  async postEvent(event) {
+    try {
+      return await Backend.post("/events", event);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+};
+
 let Venues = {
   async getVenues(searchTerm) {
     try {
@@ -95,4 +105,4 @@ let Auth = {
     return res;
   },
 };
-export { Backend, Posts, Auth, Venues, Artists }; // Backend za ručne pozive ostalo za api endpoints;
+export { Backend, Posts, Auth, Venues, Artists, Events }; // Backend za ručne pozive ostalo za api endpoints;

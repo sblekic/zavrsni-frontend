@@ -3,7 +3,7 @@ import { BrowserProvider } from "ethers";
 import { Auth } from "@/services";
 import { useWalletStore } from "@/stores/wallet";
 import { Modal } from "bootstrap/dist/js/bootstrap.js";
-import { onUnmounted } from "vue";
+import { onUnmounted, ref, watch } from "vue";
 
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
@@ -33,6 +33,8 @@ function handleAccountsChanged(accounts) {
     wallet.user = accounts[0];
   }
 }
+
+watch;
 
 // removal of event listeners
 onUnmounted(() => {
@@ -100,6 +102,20 @@ async function authenticateUser() {
   }
 }
 
+let shortAddr = ref(shortenAddress(wallet.user));
+
+function shortenAddress(address) {
+  address = (address.slice(0, 5) + ".." + address.slice(-4)).toUpperCase();
+  return address;
+}
+
+watch(
+  () => wallet.user,
+  (newUser) => {
+    shortAddr.value = shortenAddress(newUser);
+  }
+);
+
 async function disconnect() {
   // brisanje jwt cookie
   await Auth.logOut();
@@ -152,6 +168,15 @@ async function disconnect() {
         </li>
       </ul>
 
+      <!-- izbrisi kad si gotov -->
+      <ul class="navbar-nav mx-2 d-lg-block">
+        <li class="nav-item">
+          <RouterLink :to="{ name: 'dev' }" class="nav-link">
+            <i class="bi bi-code-square"></i> Testiranje
+          </RouterLink>
+        </li>
+      </ul>
+
       <!-- gumb prijave -->
       <ul
         v-if="!wallet.isConnected"
@@ -199,7 +224,7 @@ async function disconnect() {
         <div class="d-flex align-items-center px-3 pt-3">
           <i class="bi bi-person-circle me-3" style="font-size: 3rem"></i>
           <h5 class="offcanvas-title" id="offcanvasExampleLabel">
-            0x732f28...E113612D
+            {{ shortAddr }}
           </h5>
           <button
             type="button"

@@ -23,8 +23,8 @@ const router = createRouter({
       component: EventView,
     },
     {
-      path: "/test",
-      name: "testing",
+      path: "/dev",
+      name: "dev",
       component: TestingView,
     },
   ],

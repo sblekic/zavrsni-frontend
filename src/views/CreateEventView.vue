@@ -2,31 +2,44 @@
 import EventFactory from "@/assets/abi/EventFactory";
 import { BrowserProvider, Contract } from "ethers";
 import { onMounted, reactive, ref, watch } from "vue";
+import router from "@/router";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import _ from "lodash";
 import { Dropdown } from "bootstrap/dist/js/bootstrap.js";
 import { vOnClickOutside } from "@vueuse/components";
-import { Venues, Artists } from "@/services";
+import { Venues, Artists, Events } from "@/services";
+import formData from "@/stores/event";
+let venues = [
+  {
+    _id: "64d0f6e13ab62a353f57e567",
+    name: "Tvornica Kulture",
+    capacity: 2200,
+    address: {
+      streetAddress: "Šubićeva ulica 2",
+      city: "Zagreb",
+      postalCode: 10000,
+    },
+  },
+];
 
 const provider = new BrowserProvider(window.ethereum);
 
-let venues = ref({ isNotFound: false });
+// let venues = ref({ isNotFound: false });
 let artistList = ref({ isNotFound: false });
 let venueCapacity = 0;
 
 let ticketSupply = ref("");
 let currVenueCapacity = ref("");
 
-const formData = reactive({
-  eventName: "",
-  venue: "",
-  artists: [{ name: "", show: true }],
-  genre: null,
-  start: null,
-  end: null,
-  tickets: [{ type: "", supply: 0, price: "", show: true }],
-});
+// const formData = reactive({
+//   eventName: "",
+//   venue: "",
+//   artists: [{ name: "", show: true }],
+//   start: null,
+//   end: null,
+//   tickets: [{ type: "", supply: 0, price: "", show: true }],
+// });
 
 let bsVenueDropdown;
 let bsArtistDropdown;
@@ -152,6 +165,14 @@ function selectArtist(selection) {
   bsArtistDropdown.hide();
 }
 
+function confirmArtist(index) {
+  formData.artists[index].show = false;
+}
+
+function editArtist(index) {
+  formData.artists[index].show = true;
+}
+
 function addArtist(index) {
   formData.artists.push({ name: "", show: true });
   formData.artists[index].show = false;
@@ -159,6 +180,18 @@ function addArtist(index) {
 
 function removeArtist(index) {
   formData.artists.splice(index, 1);
+}
+
+function confirmTicket(index) {
+  formData.tickets[index].supply = ticketSupply.value;
+  formData.tickets[index].show = false;
+}
+
+function editTicket(index) {
+  if (isNaN(parseInt(formData.tickets[index].supply)))
+    formData.tickets[index].supply = 0;
+  else ticketSupply.value = formData.tickets[index].supply;
+  formData.tickets[index].show = true;
 }
 
 function addTicket(index) {
@@ -169,25 +202,72 @@ function addTicket(index) {
 }
 
 function removeTicket(index) {
-  formData.tickets.splice(index, 1);
+  if (formData.tickets.length === 1) {
+    formData.tickets[index].show = true;
+  } else formData.tickets.splice(index, 1);
 }
 
-function nextForm() {
-  let [eventForm] = document.getElementsByClassName("event-form");
-  eventForm.classList.add("d-none");
+let formToggle = ref(true);
+let isSubmitted = ref(false);
+let progressBarValue = ref(10);
+let progressMessage = ref("Potvrđivanje transakcije...");
+let progressColor = ref("");
 
-  let [ticketForm] = document.getElementsByClassName("ticket-form");
-  ticketForm.classList.remove("d-none");
+function setProgressBar(newValue, newMessage, barColor) {
+  if (barColor) {
+    progressBarValue.value = newValue;
+    progressMessage.value = newMessage;
+    progressColor.value = barColor;
+  } else {
+    progressBarValue.value = newValue;
+    progressMessage.value = newMessage;
+  }
 }
 
-function previousForm() {
-  let [ticketForm] = document.getElementsByClassName("ticket-form");
-  ticketForm.classList.add("d-none");
-  let [eventForm] = document.getElementsByClassName("event-form");
-  eventForm.classList.remove("d-none");
+function changeFormPage() {
+  formToggle.value = !formToggle.value;
 }
 
-async function createEvent() {
+async function createEventDb(eventAddress, organizerAddress) {
+  setProgressBar(75, "Spremanje podataka...");
+  let dbEvent = {
+    ethEventAddress: eventAddress,
+    name: formData.eventName,
+    organizerAddress,
+    startTime: parseInt(formData.start),
+    endTime: parseInt(formData.end),
+    venue: {
+      _id: venues[0]._id,
+      name: formData.venue,
+      city: venues[0].address.city,
+    },
+    lineup: [],
+    tickets: [],
+  };
+
+  for (let i = 0; i < formData.tickets.length; i++) {
+    dbEvent.tickets.push(formData.tickets[i]);
+    delete dbEvent.tickets[i].show;
+  }
+
+  for (let i = 0; i < formData.artists.length; i++) {
+    dbEvent.lineup.push(formData.artists[i]);
+    delete dbEvent.lineup[i].show;
+  }
+
+  let response = await Events.postEvent(dbEvent);
+  console.log(response);
+  if (response.status == 200) {
+    setProgressBar(100, "Event kreiran! 🎉", "bg-success");
+    returnHome();
+  } else {
+    setProgressBar(100, "Greška pri kreiranju eventa", "bg-danger");
+    returnHome();
+  }
+}
+
+async function ethCreateEvent() {
+  isSubmitted.value = true;
   let signer = await provider.getSigner();
   let contract = new Contract(
     EventFactory.contractAddress,
@@ -195,32 +275,66 @@ async function createEvent() {
     signer
   );
 
-  contract.once("EventCreated", (log) => {
-    console.log("Novi event kreiran na adresu: ", log);
-    eventId = log;
-  });
-  console.log(signer);
+  console.log("adresa signera", signer.address);
 
-  // await contract.createEvent(
-  //   { name: "land of", start: 1694368800, end: 1694379600 },
-  //   ["GA", "VIP"],
-  //   [500, 100],
-  //   [55, 140]
-  // );
+  const ethEventData = {
+    name: formData.eventName,
+    start: parseInt(formData.start),
+    end: parseInt(formData.end),
+  };
+
+  let ethTicketTypes = [];
+  let ethTicketSupplies = [];
+  let ethTicketPrices = [];
+  for (let i = 0; i < formData.tickets.length; i++) {
+    ethTicketTypes.push(formData.tickets[i].type);
+    ethTicketSupplies.push(formData.tickets[i].supply);
+    ethTicketPrices.push(formData.tickets[i].price);
+  }
+  console.log(ethTicketTypes, ethTicketSupplies, ethTicketPrices);
+
+  try {
+    await contract.createEvent(
+      ethEventData,
+      ethTicketTypes,
+      ethTicketSupplies,
+      ethTicketPrices
+    );
+
+    setProgressBar(
+      50,
+      "Kreiranje ugovora na blockchainu... (može malo potrajati)"
+    );
+
+    // ako stavim listener vani i user odbije potpisati, svaki put će se postaviti novi listener
+    // zbog toga kada prođe deploy poslati će se onoliko zahtjeva backendu koliko ima postavljenih listenera
+    contract.once("EventCreated", (log) => {
+      console.log("Novi event kreiran na adresu: ", log);
+      createEventDb(log, signer.address);
+    });
+  } catch (error) {
+    if (error.info.error.code == 4001)
+      console.log("User Denied trasaction signature");
+    else console.log("Neka druga greška ", error);
+  }
+}
+
+function returnHome() {
+  setTimeout(() => router.push("/"), 2000);
 }
 </script>
 
 <template>
   <main>
     <div class="container px-4">
-      {{ formData }}
-
-      {{ venueCapacity }}
+      <!-- {{ formData }}
+      <p class="mt-4">venue</p>
+      {{ venues }} -->
       <div class="d-flex mb-4 justify-content-center">
-        <h1 class="">Organiziraj koncert</h1>
+        <p class="display-4">Organiziraj koncert</p>
       </div>
       <!-- form za događaj -->
-      <div class="event-form row">
+      <div v-if="formToggle" class="event-form row">
         <!-- form left col; event data -->
         <div class="col">
           <div class="row g-3">
@@ -295,18 +409,34 @@ async function createEvent() {
                 <button
                   v-if="artist.show"
                   @click="addArtist(index)"
-                  class="btn btn-outline-primary rounded-end"
+                  class="btn btn-outline-primary"
                   type="button"
                 >
                   <i class="bi bi-plus-lg"></i>
                 </button>
                 <button
-                  v-else
+                  v-if="artist.show"
+                  @click="confirmArtist(index)"
+                  class="btn btn-outline-success rounded-end"
+                  type="button"
+                >
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button
+                  v-else-if="!index == 0"
                   @click="removeArtist(index)"
                   class="btn btn-outline-danger rounded-end"
                   type="button"
                 >
                   <i class="bi bi-x-lg"></i>
+                </button>
+                <button
+                  v-else
+                  @click="editArtist(index)"
+                  class="btn btn-outline-primary rounded-end"
+                  type="button"
+                >
+                  <i class="bi bi-pen"></i>
                 </button>
               </div>
               <div class="dropdown">
@@ -372,14 +502,14 @@ async function createEvent() {
 
         <!-- pc button -->
         <div class="d-flex mt-4 pe-3 justify-content-end d-none d-lg-flex">
-          <button @click="nextForm" class="btn btn-primary">
+          <button @click="changeFormPage" class="btn btn-primary">
             Dalje <i class="bi bi-caret-right"></i>
           </button>
         </div>
         <!-- mobile button -->
         <div class="d-flex justify-content-center">
           <div class="d-flex flex-column mt-4 pe-3 d-lg-none w-75">
-            <button @click="nextForm" class="btn btn-primary">
+            <button @click="changeFormPage" class="btn btn-primary">
               Dalje <i class="bi bi-caret-right"></i>
             </button>
           </div>
@@ -387,13 +517,13 @@ async function createEvent() {
       </div>
 
       <!-- form za ulaznice -->
-      <div class="ticket-form row d-none">
+      <div v-else-if="!isSubmitted" class="ticket-form row">
         <!-- form left col; ticket data -->
         <div class="col">
           <div v-for="(ticket, index) in formData.tickets" class="row mb-3">
             <!-- form elements -->
             <!-- naziv ulaznice -->
-            <div class="col-lg-6 col-12">
+            <div class="col-lg-10 col-12">
               <label for="inputNazivUlaznice" class="form-label"
                 >Naziv ulaznice</label
               >
@@ -415,7 +545,7 @@ async function createEvent() {
             </div>
 
             <!-- kolicina -->
-            <div class="col-lg-3">
+            <div class="col-lg-5">
               <label for="inputBrUlaznica" class="form-label">Količina</label>
               <div class="input-group">
                 <input
@@ -445,7 +575,7 @@ async function createEvent() {
             </div>
 
             <!-- cijena -->
-            <div class="col-lg-3">
+            <div class="col-lg-5">
               <label for="inputCijena" class="form-label">Cijena</label>
               <div class="input-group">
                 <input
@@ -471,11 +601,25 @@ async function createEvent() {
                   <i class="bi bi-plus-lg"></i>
                 </button>
                 <button
-                  v-else
+                  v-if="ticket.show"
+                  @click="confirmTicket(index)"
+                  class="btn btn-outline-success"
+                >
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button
+                  v-show="!index == 0 && !ticket.show"
                   @click="removeTicket(index)"
                   class="btn btn-outline-danger ms-3 rounded-start"
                 >
                   <i class="bi bi-x-lg"></i>
+                </button>
+                <button
+                  v-show="!ticket.show"
+                  @click="editTicket(index)"
+                  class="btn btn-outline-primary"
+                >
+                  <i class="bi bi-pen"></i>
                 </button>
               </div>
             </div>
@@ -493,10 +637,10 @@ async function createEvent() {
 
         <!-- desktop buttons -->
         <div class="d-flex mt-4 pe-3 justify-content-end d-none d-lg-flex">
-          <button @click="previousForm" class="btn btn-primary">
+          <button @click="changeFormPage" class="btn btn-primary">
             <i class="bi bi-caret-left"></i> Nazad
           </button>
-          <button @click="createEvent" class="btn btn-primary ms-2">
+          <button @click="ethCreateEvent" class="btn btn-primary ms-2">
             Kreiraj događaj
           </button>
         </div>
@@ -504,13 +648,33 @@ async function createEvent() {
         <!-- mobile buttons -->
         <div class="d-flex justify-content-center">
           <div class="d-flex flex-column mt-4 pe-3 d-lg-none w-75">
-            <button @click="previousForm" class="btn btn-primary">
+            <button @click="changeFormPage" class="btn btn-primary">
               <i class="bi bi-caret-left"></i> Nazad
             </button>
-            <button @click="createEvent" class="btn btn-primary mt-2">
+            <button @click="ethCreateEvent" class="btn btn-primary mt-2">
               Kreiraj događaj
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- progress bar za submit forme -->
+      <div v-else class="col-12 text-center mt-4 p-5">
+        <div class="col-12 m-5"></div>
+
+        <div class="display-6 mb-3">{{ progressMessage }}</div>
+        <div
+          class="progress"
+          role="progressbar"
+          aria-label="Default striped example"
+          aria-valuenow="10"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div
+            :class="`progress-bar progress-bar-striped progress-bar-animated ${progressColor}`"
+            :style="`width: ${progressBarValue}%`"
+          ></div>
         </div>
       </div>
     </div>

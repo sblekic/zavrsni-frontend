@@ -34,6 +34,16 @@ let Events = {
   },
 };
 
+let Tickets = {
+  async postTicketMeta(ticket) {
+    try {
+      return await Backend.post("/tickets", ticket);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+};
+
 let Venues = {
   async getVenues(searchTerm) {
     try {
@@ -105,4 +115,4 @@ let Auth = {
     return res;
   },
 };
-export { Backend, Posts, Auth, Venues, Artists, Events }; // Backend za ručne pozive ostalo za api endpoints;
+export { Backend, Posts, Auth, Venues, Artists, Events, Tickets }; // Backend za ručne pozive ostalo za api endpoints;

@@ -267,6 +267,7 @@ async function createEventDb(eventAddress, organizerAddress) {
 }
 
 async function ethCreateEvent() {
+  // toggle vrijednost koja skriva form i prikazuje progress bar
   isSubmitted.value = true;
   let signer = await provider.getSigner();
   let contract = new Contract(
@@ -308,9 +309,9 @@ async function ethCreateEvent() {
 
     // ako stavim listener vani i user odbije potpisati, svaki put će se postaviti novi listener
     // zbog toga kada prođe deploy poslati će se onoliko zahtjeva backendu koliko ima postavljenih listenera
-    contract.once("EventCreated", (log) => {
-      console.log("Novi event kreiran na adresu: ", log);
-      createEventDb(log, signer.address);
+    contract.once("EventCreated", (proxyId) => {
+      console.log("Novi event kreiran na adresu: ", proxyId);
+      createEventDb(proxyId, signer.address);
     });
   } catch (error) {
     if (error.info.error.code == 4001)

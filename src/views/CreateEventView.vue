@@ -335,7 +335,7 @@ function returnHome() {
         <p class="display-4">Organiziraj koncert</p>
       </div>
       <!-- form za događaj -->
-      <div v-if="formToggle" class="event-form row">
+      <div v-if="formToggle" class="row">
         <!-- form left col; event data -->
         <div class="col">
           <div class="row g-3">
@@ -518,7 +518,7 @@ function returnHome() {
       </div>
 
       <!-- form za ulaznice -->
-      <div v-else-if="!isSubmitted" class="ticket-form row">
+      <div v-else-if="!isSubmitted" class="row">
         <!-- form left col; ticket data -->
         <div class="col">
           <div v-for="(ticket, index) in formData.tickets" class="row mb-3">

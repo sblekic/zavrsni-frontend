@@ -128,13 +128,8 @@ async function disconnect() {
   <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary">
     <div class="container justify-content-start">
       <!-- reminder; skraćeni logo ako bude trebalo. sakrij ovaj i zamijeni sa skraćenom verzijom -->
-      <RouterLink :to="{ name: 'Home' }" class="navbar-brand"
-        ><img
-          src="https://placeholder.pics/svg/32x33/4FFF3B-3969FF"
-          class="me-1"
-          alt="Showstarter Logo"
-        />
-        Showstarter
+      <RouterLink :to="{ name: 'Home' }" class="navbar-brand">
+        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" />
       </RouterLink>
 
       <!-- search bar -->
@@ -169,7 +164,7 @@ async function disconnect() {
       </ul>
 
       <!-- izbrisi kad si gotov -->
-      <ul class="navbar-nav mx-2 d-lg-block">
+      <ul class="navbar-nav mx-2 d-none d-lg-block">
         <li class="nav-item">
           <RouterLink :to="{ name: 'dev' }" class="nav-link">
             <i class="bi bi-code-square"></i> Testiranje
@@ -301,8 +296,10 @@ async function disconnect() {
           <div class="d-flex flex-column">
             <div>
               <img
+                height="100px"
+                width="100px"
                 class="mb-3"
-                src="https://placeholder.pics/svg/64x64/FFB121"
+                src="@/assets/metamask-logo.svg"
                 alt="Metamask Logo"
               />
               <h1 class="m-4">Dobrodošao!</h1>

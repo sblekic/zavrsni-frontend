@@ -29,6 +29,7 @@ async function buyTicket(ticketType = "GA", ticketPrice = "0.035503483779348") {
 }
 
 const counter = useCounterStore();
+
 let posts = ref();
 async function fetchPosts() {
   try {

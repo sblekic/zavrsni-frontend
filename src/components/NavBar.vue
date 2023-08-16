@@ -129,7 +129,7 @@ async function disconnect() {
     <div class="container justify-content-start">
       <!-- reminder; skraćeni logo ako bude trebalo. sakrij ovaj i zamijeni sa skraćenom verzijom -->
       <RouterLink :to="{ name: 'Home' }" class="navbar-brand">
-        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" />
+        <img alt="showStarter logo" class="logo" src="@/assets/logo.svg" />
       </RouterLink>
 
       <!-- search bar -->

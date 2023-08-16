@@ -9,37 +9,37 @@ import _ from "lodash";
 import { Dropdown } from "bootstrap/dist/js/bootstrap.js";
 import { vOnClickOutside } from "@vueuse/components";
 import { Venues, Artists, Events } from "@/services";
-import formData from "@/stores/event";
-let venues = [
-  {
-    _id: "64d0f6e13ab62a353f57e567",
-    name: "Tvornica Kulture",
-    capacity: 2200,
-    address: {
-      streetAddress: "Šubićeva ulica 2",
-      city: "Zagreb",
-      postalCode: 10000,
-    },
-  },
-];
+// import formData from "@/stores/event";
+// let venues = [
+//   {
+//     _id: "64d0f6e13ab62a353f57e567",
+//     name: "Tvornica Kulture",
+//     capacity: 2200,
+//     address: {
+//       streetAddress: "Šubićeva ulica 2",
+//       city: "Zagreb",
+//       postalCode: 10000,
+//     },
+//   },
+// ];
 
 const provider = new BrowserProvider(window.ethereum);
 
-// let venues = ref({ isNotFound: false });
+let venues = ref({ isNotFound: false });
 let artistList = ref({ isNotFound: false });
 let venueCapacity = 0;
 
 let ticketSupply = ref("");
 let currVenueCapacity = ref("");
 
-// const formData = reactive({
-//   eventName: "",
-//   venue: "",
-//   artists: [{ name: "", show: true }],
-//   start: null,
-//   end: null,
-//   tickets: [{ type: "", supply: 0, price: "", show: true }],
-// });
+const formData = reactive({
+  eventName: "",
+  venue: "",
+  artists: [{ name: "", show: true }],
+  start: null,
+  end: null,
+  tickets: [{ type: "", supply: 0, price: "", show: true }],
+});
 
 let bsVenueDropdown;
 let bsArtistDropdown;
@@ -230,6 +230,7 @@ function changeFormPage() {
 
 async function createEventDb(eventAddress, organizerAddress) {
   setProgressBar(75, "Spremanje podataka...");
+  let venueObj = JSON.parse(JSON.stringify(venues.value)).pop();
   let dbEvent = {
     ethEventAddress: eventAddress,
     name: formData.eventName,
@@ -237,9 +238,9 @@ async function createEventDb(eventAddress, organizerAddress) {
     startTime: parseInt(formData.start),
     endTime: parseInt(formData.end),
     venue: {
-      _id: venues[0]._id,
+      _id: venueObj._id,
       name: formData.venue,
-      city: venues[0].address.city,
+      city: venueObj.address.city,
     },
     lineup: [],
     tickets: [],

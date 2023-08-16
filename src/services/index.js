@@ -25,6 +25,36 @@ let Posts = {
 };
 
 let Events = {
+  async getEvents() {
+    try {
+      let response = await Backend.get("/events");
+      let events = response.data.map((doc) => {
+        return {
+          id: doc.ethEventAddress,
+          name: doc.name,
+          date: new Intl.DateTimeFormat("hr", {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+          })
+            .format(doc.startTime * 1000)
+            .replace(/\s/g, ""),
+          dayHour: `${new Intl.DateTimeFormat("hr", {
+            weekday: "short",
+            hour: "numeric",
+            minute: "numeric",
+          })
+            .format(doc.startTime * 1000)
+            .replace(/\s/g, " - ")}`,
+          location: `${doc.venue.name}, ${doc.venue.city}`,
+        };
+      });
+
+      return events;
+    } catch (error) {
+      console.log(error);
+    }
+  },
   async postEvent(event) {
     try {
       return await Backend.post("/events", event);

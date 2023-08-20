@@ -34,8 +34,6 @@ function handleAccountsChanged(accounts) {
   }
 }
 
-watch;
-
 // removal of event listeners
 onUnmounted(() => {
   console.log("unMount");
@@ -65,9 +63,11 @@ function closeAuthModal() {
   const modal = Modal.getInstance(modalEl);
   try {
     modal.hide();
-    modalEl.addEventListener("hidden.bs.modal", (event) => {
+    function removeOnHidden() {
       modal.dispose();
-    });
+    }
+    modalEl.addEventListener("hidden.bs.modal", removeOnHidden);
+    modalEl.removeEventListener("hidden.bs.modal", removeOnHidden);
   } catch (error) {
     // zna izbaciti grešku da je modal backdrop null ili nešto
     console.log("čisto da uhvatim error ali radi ok inače ", error);

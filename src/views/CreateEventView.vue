@@ -320,9 +320,9 @@ async function ethCreateEvent() {
 
     // ako stavim listener vani i user odbije potpisati, svaki put će se postaviti novi listener
     // zbog toga kada prođe deploy poslati će se onoliko zahtjeva backendu koliko ima postavljenih listenera
-    contract.once("EventCreated", (proxyId) => {
+    contract.once("EventCreated", async (proxyId) => {
       console.log("Novi event kreiran na adresu: ", proxyId);
-      createEventDb(proxyId, signer.address);
+      await createEventDb(proxyId, signer.address);
     });
   } catch (error) {
     console.log("Neka greška ", error);

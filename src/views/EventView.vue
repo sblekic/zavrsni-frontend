@@ -3,7 +3,7 @@ import EventImplementation from "@/assets/abi/EventImplementation";
 import { BrowserProvider, Contract, parseUnits } from "ethers";
 import { ref, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { Events } from "@/services";
+import { Events, Tickets } from "@/services";
 
 const provider = new BrowserProvider(window.ethereum);
 
@@ -19,6 +19,22 @@ function weiToEth(price) {
 onBeforeMount(async () => {
   event.value = await Events.getEventById(route.params.eventId);
 });
+
+async function postTicketMeta(tokenId, ticketType, owner) {
+  let ticketMeta = {
+    tokenId: parseInt(tokenId),
+    eventName: event.value.name,
+    type: ticketType,
+    startTime: event.value.startStamp,
+    venue: event.value.venueInfo.name,
+    city: event.value.venueInfo.address.city,
+    eventAddress: route.params.eventId,
+    owner,
+    isScanned: false,
+  };
+  let res = await Tickets.postTicketMeta(ticketMeta);
+  console.log(res.data);
+}
 
 async function buyTicket(ticket) {
   if (provider) {
@@ -39,9 +55,11 @@ async function buyTicket(ticket) {
         value: parseUnits(`${ticket.weiPrice}`, "wei"),
       });
 
-      contract.once("TicketSale", (proxyAddress, tokenId) => {
-        console.log("Novi event kreiran na adresu: ", proxyId);
-        createEventDb(proxyId, signer.address);
+      contract.once("TicketSale", async (proxyAddress, tokenId) => {
+        console.log(
+          `Prodana ulaznica # ${tokenId} za event s adrese ${proxyAddress}`
+        );
+        await postTicketMeta(tokenId, ticket.type, signer.address);
       });
     } catch (error) {
       console.log(error);

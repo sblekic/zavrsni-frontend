@@ -96,6 +96,7 @@ let Events = {
         name: doc.name,
         location: `${doc.venue.name}, ${doc.venue.city}`,
         dayHour: customDate,
+        startStamp: doc.startTime,
         tickets: doc.tickets,
         lineup: doc.lineup,
         venueInfo: venueRequest.data[0],

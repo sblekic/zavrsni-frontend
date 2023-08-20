@@ -6,6 +6,20 @@ let Backend = axios.create({
   timeout: 7000,
 });
 
+let Exchange = {
+  async eurToEth() {
+    let response = await axios.get(
+      "https://api.coinbase.com/v2/exchange-rates?currency=EUR"
+    );
+    let rate = response.data.data.rates.ETH;
+    console.log("rate", rate);
+    let wei = parseFloat(rate) * 10 ** 18;
+    return wei;
+    // console.log("rate in wei", wei);
+    // let exchange = eur * wei;
+    // return exchange;
+  },
+};
 // naš objekt za sve pozive koji se dotiču `Post`ova
 let Posts = {
   async getAll() {
@@ -55,6 +69,43 @@ let Events = {
       console.log(error);
     }
   },
+  async getEventById(id) {
+    try {
+      let response = await Backend.get(`/events/${id}`);
+      let doc = response.data;
+      let venueRequest = await Backend.get("/venues", {
+        params: {
+          _any: doc.venue.name,
+        },
+      });
+
+      let customDate = new Intl.DateTimeFormat("hr", {
+        weekday: "long",
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      })
+        .format(doc.startTime * 1000)
+        .replace(/\s/g, "")
+        .replace(",", ", ");
+
+      customDate = customDate.slice(0, -5) + " - " + customDate.slice(-5);
+      let event = {
+        name: doc.name,
+        location: `${doc.venue.name}, ${doc.venue.city}`,
+        dayHour: customDate,
+        tickets: doc.tickets,
+        lineup: doc.lineup,
+        venueInfo: venueRequest.data[0],
+      };
+      return event;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   async postEvent(event) {
     try {
       return await Backend.post("/events", event);
@@ -145,4 +196,4 @@ let Auth = {
     return res;
   },
 };
-export { Backend, Posts, Auth, Venues, Artists, Events, Tickets }; // Backend za ručne pozive ostalo za api endpoints;
+export { Backend, Posts, Auth, Venues, Artists, Events, Tickets, Exchange }; // Backend za ručne pozive ostalo za api endpoints;

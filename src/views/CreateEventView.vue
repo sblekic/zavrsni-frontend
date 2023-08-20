@@ -8,7 +8,7 @@ import "flatpickr/dist/flatpickr.css";
 import _ from "lodash";
 import { Dropdown } from "bootstrap/dist/js/bootstrap.js";
 import { vOnClickOutside } from "@vueuse/components";
-import { Venues, Artists, Events } from "@/services";
+import { Venues, Artists, Events, Exchange } from "@/services";
 // import formData from "@/stores/event";
 // let venues = [
 //   {
@@ -249,6 +249,10 @@ async function createEventDb(eventAddress, organizerAddress) {
   for (let i = 0; i < formData.tickets.length; i++) {
     dbEvent.tickets.push(formData.tickets[i]);
     delete dbEvent.tickets[i].show;
+    dbEvent.tickets[i].supply = parseInt(dbEvent.tickets[i].supply);
+    dbEvent.tickets[i].weiPrice =
+      parseInt(dbEvent.tickets[i].price) * exchangeRateWei;
+    dbEvent.tickets[i].eurPrice = parseInt(dbEvent.tickets[i].price);
   }
 
   for (let i = 0; i < formData.artists.length; i++) {
@@ -257,7 +261,7 @@ async function createEventDb(eventAddress, organizerAddress) {
   }
 
   let response = await Events.postEvent(dbEvent);
-  console.log(response);
+  // console.log(response);
   if (response.status == 200) {
     setProgressBar(100, "Event kreiran! 🎉", "bg-success");
     returnHome();
@@ -267,9 +271,12 @@ async function createEventDb(eventAddress, organizerAddress) {
   }
 }
 
+let exchangeRateWei;
+
 async function ethCreateEvent() {
   // toggle vrijednost koja skriva form i prikazuje progress bar
   isSubmitted.value = true;
+  exchangeRateWei = await Exchange.eurToEth();
   let signer = await provider.getSigner();
   let contract = new Contract(
     EventFactory.contractAddress,
@@ -278,6 +285,7 @@ async function ethCreateEvent() {
   );
 
   console.log("adresa signera", signer.address);
+  console.log("ulaznice", exchangeRateWei);
 
   const ethEventData = {
     name: formData.eventName,
@@ -291,7 +299,9 @@ async function ethCreateEvent() {
   for (let i = 0; i < formData.tickets.length; i++) {
     ethTicketTypes.push(formData.tickets[i].type);
     ethTicketSupplies.push(formData.tickets[i].supply);
-    ethTicketPrices.push(formData.tickets[i].price);
+    ethTicketPrices.push(
+      BigInt(parseInt(formData.tickets[i].price) * exchangeRateWei)
+    );
   }
   console.log(ethTicketTypes, ethTicketSupplies, ethTicketPrices);
 
@@ -315,9 +325,7 @@ async function ethCreateEvent() {
       createEventDb(proxyId, signer.address);
     });
   } catch (error) {
-    if (error.info.error.code == 4001)
-      console.log("User Denied trasaction signature");
-    else console.log("Neka druga greška ", error);
+    console.log("Neka greška ", error);
   }
 }
 
@@ -503,14 +511,14 @@ function returnHome() {
         </div>
 
         <!-- pc button -->
-        <div class="d-flex mt-4 pe-3 justify-content-end d-none d-lg-flex">
+        <div class="d-flex mt-4 justify-content-end d-none d-lg-flex">
           <button @click="changeFormPage" class="btn btn-primary">
             Dalje <i class="bi bi-caret-right"></i>
           </button>
         </div>
         <!-- mobile button -->
         <div class="d-flex justify-content-center">
-          <div class="d-flex flex-column mt-4 pe-3 d-lg-none w-75">
+          <div class="d-flex flex-column mt-4 d-lg-none w-75">
             <button @click="changeFormPage" class="btn btn-primary">
               Dalje <i class="bi bi-caret-right"></i>
             </button>
@@ -638,7 +646,7 @@ function returnHome() {
         </div>
 
         <!-- desktop buttons -->
-        <div class="d-flex mt-4 pe-3 justify-content-end d-none d-lg-flex">
+        <div class="d-flex mt-4 justify-content-end d-none d-lg-flex">
           <button @click="changeFormPage" class="btn btn-primary">
             <i class="bi bi-caret-left"></i> Nazad
           </button>
@@ -649,7 +657,7 @@ function returnHome() {
 
         <!-- mobile buttons -->
         <div class="d-flex justify-content-center">
-          <div class="d-flex flex-column mt-4 pe-3 d-lg-none w-75">
+          <div class="d-flex flex-column mt-4 d-lg-none w-75">
             <button @click="changeFormPage" class="btn btn-primary">
               <i class="bi bi-caret-left"></i> Nazad
             </button>

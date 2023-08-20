@@ -1,11 +1,16 @@
 <script setup>
 import { ref } from "vue";
-import { Posts, Tickets } from "@/services";
+import { Posts, Tickets, Exchange } from "@/services";
 import { useCounterStore } from "@/stores/counter";
 import { BrowserProvider, Contract, parseEther } from "ethers";
 import EventProxy from "@/assets/abi/EventImplementation";
+import axios from "axios";
 
 const provider = new BrowserProvider(window.ethereum);
+
+async function exchange() {
+  console.log(await Exchange.eurToEth(30));
+}
 
 async function postTicketMetadata(ticketId) {
   let ticket = {
@@ -47,8 +52,11 @@ async function fetchPosts() {
       <button class="btn btn-primary me-3" @click="buyTicket()">
         Buy ticket (bc)
       </button>
-      <button class="btn btn-primary" @click="postTicketMetadata(4)">
+      <button class="btn btn-primary me-3" @click="postTicketMetadata(4)">
         Post ticket metadata to db
+      </button>
+      <button class="btn btn-primary me-3" @click="exchange()">
+        get exchange rate
       </button>
       <p v-if="posts">{{ posts[2] }}</p>
     </div>

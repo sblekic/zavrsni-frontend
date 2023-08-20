@@ -25,5 +25,14 @@
       "city": "Rijeka",
       "postalCode": 51000
     }
+  },
+  {
+    "name": "Arena Zagreb",
+    "capacity": 24000,
+    "address": {
+      "streetAddress": "Ul. Vice Vukova 8",
+      "city": "Zagreb",
+      "postalCode": 10000
+    }
   }
 ]

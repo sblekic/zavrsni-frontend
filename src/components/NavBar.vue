@@ -199,7 +199,8 @@ async function disconnect() {
             data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasExample"
           >
-            <i class="bi bi-person-circle me-1"></i> Moj profil
+            <i class="bi bi-person-circle me-1"></i>
+            Moj profil
             <i
               v-if="wallet.isAuthWarning"
               class="bi bi-exclamation-square ms-1"
@@ -217,8 +218,14 @@ async function disconnect() {
       >
         <!-- offcanvas header -->
         <div class="d-flex align-items-center px-3 pt-3">
-          <i class="bi bi-person-circle me-3" style="font-size: 3rem"></i>
-          <h5 class="offcanvas-title" id="offcanvasExampleLabel">
+          <!-- <i class="bi bi-person-circle me-3" style="font-size: 3rem"></i> -->
+          <img
+            class="me-3"
+            src="https://api.dicebear.com/6.x/pixel-art/svg"
+            width="50"
+            height="72"
+          />
+          <h5 class="offcanvas-title mx-auto" id="offcanvasExampleLabel">
             {{ shortAddr }}
           </h5>
           <button

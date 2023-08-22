@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { Tickets } from "@/services";
+import { Tickets, Backend } from "@/services";
 import { useQRCode } from "@vueuse/integrations/useQRCode";
 
 const route = useRoute();
@@ -15,12 +15,11 @@ onBeforeMount(async () => {
 });
 
 function generateQR(ticket) {
-  checkInQr.value = useQRCode(
-    JSON.stringify({
-      tokenId: ticket.tokenId,
-      owner: ticket.owner,
-    })
-  );
+  // let baseURL = import.meta.env.VITE_AXIOS_URL;
+  // console.log("vrijednost qr koda: ", baseURL + "tickets/" + ticket.id);
+  // checkInQr.value = useQRCode(baseURL + "tickets/" + ticket.id);
+  checkInQr.value = useQRCode(ticket.id);
+
   showQr.value = true;
 }
 </script>
@@ -107,7 +106,7 @@ function generateQR(ticket) {
                     type="button"
                     class="btn btn-primary"
                   >
-                    Prikaži QR kod
+                    Kreiraj QR kod
                   </button>
                   <img v-else :src="checkInQr.value" alt="QR Code" />
                 </div>

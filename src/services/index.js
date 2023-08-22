@@ -117,6 +117,13 @@ let Events = {
 };
 
 let Tickets = {
+  async scanTicket(ticketId) {
+    try {
+      return await Backend.patch(`tickets/${ticketId}`);
+    } catch (error) {
+      console.log(error);
+    }
+  },
   async postTicketMeta(ticket) {
     try {
       return await Backend.post("/tickets", ticket);
@@ -129,6 +136,7 @@ let Tickets = {
       let res = await Backend.get(`/tickets/${userId}`);
       let tickets = res.data.map((doc) => {
         return {
+          id: doc._id,
           tokenId: doc.tokenId,
           type: doc.type,
           price: doc.price,
@@ -213,7 +221,7 @@ let Auth = {
 
   async verifySignature(message, signature) {
     let res = await Backend.post(
-      "/auth/verify",
+      "/auth/verify-signature",
       {
         message,
         signature,

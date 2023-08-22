@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import CreateEventView from "@/views/CreateEventView.vue";
 import EventView from "@/views/EventView.vue";
 import UserView from "@/views/UserView.vue";
+import TicketScanView from "@/views/TicketScanView.vue";
 import TestingView from "@/views/TestingView.vue";
 
 const router = createRouter({
@@ -27,6 +28,11 @@ const router = createRouter({
       path: "/user/:userId",
       name: "UserView",
       component: UserView,
+    },
+    {
+      path: "/scan-ticket",
+      name: "ScanView",
+      component: TicketScanView,
     },
     {
       path: "/dev",

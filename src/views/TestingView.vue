@@ -45,11 +45,19 @@ async function fetchPosts() {
   }
 }
 
-function onDetect(qrValue) {
+let toggle = ref(false);
+
+async function onDetect(qrValue) {
   console.log(qrValue[0].rawValue);
+  let ticketId = qrValue[0].rawValue;
+  let res = await Tickets.scanTicket(ticketId);
+  console.log(res.data);
 }
 
-let toggle = ref(false);
+function onError(err) {
+  console.log(err);
+}
+
 function start() {
   toggle.value = !toggle.value;
 }
@@ -71,10 +79,19 @@ function start() {
       <p v-if="posts">{{ posts[2] }}</p>
 
       <button @click="start" class="btn btn-primary">QR scan</button>
-
-      <qrcode-stream v-if="toggle" @detect="onDetect"></qrcode-stream>
+      <div class="qr-wrapper">
+        <qrcode-stream
+          v-if="toggle"
+          @error="onError"
+          @detect="onDetect"
+        ></qrcode-stream>
+      </div>
     </div>
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+.qr-wrapper >>> video {
+  width: 50%;
+}
+</style>

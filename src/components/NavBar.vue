@@ -142,7 +142,7 @@ async function disconnect() {
           <input
             type="search"
             class="form-control"
-            placeholder="Traži po izvođaču, lokaciji ili žanru"
+            placeholder="Traži po izvođaču ili lokaciji"
             aria-label="Recipient's username"
             aria-describedby="button-addon2"
           />
@@ -252,6 +252,17 @@ async function disconnect() {
               data-bs-target="#offcanvasExample"
             >
               <i class="bi bi-ticket-perforated me-2"></i>Moje ulaznice
+            </button>
+          </div>
+
+          <div class="d-flex my-1">
+            <button
+              @click="router.push('/scan-ticket')"
+              class="btn btn-primary flex-grow-1"
+              data-bs-dismiss="offcanvas"
+              data-bs-target="#offcanvasExample"
+            >
+              <i class="bi bi-ticket-perforated me-2"></i>Skeniraj ulaznice
             </button>
           </div>
 

@@ -234,7 +234,7 @@ async function createEventDb(eventAddress, organizerAddress) {
   let dbEvent = {
     ethEventAddress: eventAddress,
     name: formData.eventName,
-    organizerAddress,
+    organizerAddress: organizerAddress.toLowerCase(),
     startTime: parseInt(formData.start),
     endTime: parseInt(formData.end),
     venue: {

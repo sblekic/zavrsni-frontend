@@ -124,6 +124,41 @@ let Tickets = {
       console.log(error);
     }
   },
+  async getUserTickets(userId) {
+    try {
+      let res = await Backend.get(`/tickets/${userId}`);
+      let tickets = res.data.map((doc) => {
+        return {
+          tokenId: doc.tokenId,
+          type: doc.type,
+          price: doc.price,
+          owner: doc.owner,
+          eventId: doc.eventAddress,
+          eventName: doc.eventName,
+          venue: doc.venue,
+          city: doc.city,
+          customDate: new Intl.DateTimeFormat("hr", {
+            weekday: "long",
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+          })
+            .format(doc.startTime * 1000)
+            .replace(/\s/g, "")
+            .replace(",", ", "),
+          start: new Intl.DateTimeFormat("hr", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(doc.startTime * 1000),
+        };
+      });
+      console.log(res.data[0]);
+
+      return tickets;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 
 let Venues = {

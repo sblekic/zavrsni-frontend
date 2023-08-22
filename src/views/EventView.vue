@@ -20,16 +20,17 @@ onBeforeMount(async () => {
   event.value = await Events.getEventById(route.params.eventId);
 });
 
-async function postTicketMeta(tokenId, ticketType, owner) {
+async function postTicketMeta(tokenId, ticketType, price, owner) {
   let ticketMeta = {
     tokenId: parseInt(tokenId),
     eventName: event.value.name,
     type: ticketType,
+    price,
     startTime: event.value.startStamp,
     venue: event.value.venueInfo.name,
     city: event.value.venueInfo.address.city,
     eventAddress: route.params.eventId,
-    owner,
+    owner: owner.toLowerCase(),
     isScanned: false,
   };
   let res = await Tickets.postTicketMeta(ticketMeta);
@@ -59,7 +60,12 @@ async function buyTicket(ticket) {
         console.log(
           `Prodana ulaznica # ${tokenId} za event s adrese ${proxyAddress}`
         );
-        await postTicketMeta(tokenId, ticket.type, signer.address);
+        await postTicketMeta(
+          tokenId,
+          ticket.type,
+          ticket.eurPrice,
+          signer.address
+        );
       });
     } catch (error) {
       console.log(error);

@@ -4,6 +4,7 @@ import { Auth } from "@/services";
 import { useWalletStore } from "@/stores/wallet";
 import { Modal } from "bootstrap/dist/js/bootstrap.js";
 import { onUnmounted, ref, watch } from "vue";
+import router from "@/router";
 
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
@@ -244,20 +245,25 @@ async function disconnect() {
         <!-- offcanvas body -->
         <div class="offcanvas-body primary">
           <div class="d-flex my-1">
-            <button class="btn btn-primary flex-grow-1">
+            <button
+              @click="router.push(`/user/${wallet.user}`)"
+              class="btn btn-primary flex-grow-1"
+              data-bs-dismiss="offcanvas"
+              data-bs-target="#offcanvasExample"
+            >
               <i class="bi bi-ticket-perforated me-2"></i>Moje ulaznice
             </button>
           </div>
 
           <div class="d-flex my-1 d-lg-none">
-            <RouterLink
-              :to="{ name: 'CreateEvent' }"
+            <button
+              @click="router.push('/create-event')"
               class="btn btn-primary flex-grow-1"
               data-bs-dismiss="offcanvas"
               data-bs-target="#offcanvasExample"
             >
               <i class="bi bi-calendar-event me-2"></i> Organiziraj koncert
-            </RouterLink>
+            </button>
           </div>
 
           <div class="d-flex my-1">

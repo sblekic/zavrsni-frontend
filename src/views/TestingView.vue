@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { Posts, Tickets, Exchange } from "@/services";
 import { useCounterStore } from "@/stores/counter";
 import { BrowserProvider, Contract, parseEther } from "ethers";
 import EventProxy from "@/assets/abi/EventImplementation";
 import axios from "axios";
+import QrScanner from "qr-scanner";
 
 const provider = new BrowserProvider(window.ethereum);
 
@@ -43,6 +44,24 @@ async function fetchPosts() {
     console.log(error);
   }
 }
+
+// qr scanner
+let qrScan = ref();
+
+function test() {
+  // console.log(qrScan.value);
+  qrScanner.start();
+}
+let qrScanner;
+onMounted(() => {
+  qrScanner = new QrScanner(
+    qrScan.value,
+    (result) => console.log("decoded qr code:", result),
+    {
+      /* your options or returnDetailedScanResult: true if you're not specifying any other options */
+    }
+  );
+});
 </script>
 
 <template>
@@ -59,6 +78,11 @@ async function fetchPosts() {
         get exchange rate
       </button>
       <p v-if="posts">{{ posts[2] }}</p>
+
+      <button @click="test" class="btn btn-primary">QR scan</button>
+
+      <!-- {{ qrText }} -->
+      <video ref="qrScan"></video>
     </div>
   </main>
 </template>

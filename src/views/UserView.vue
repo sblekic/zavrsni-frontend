@@ -1,17 +1,17 @@
 <script setup>
-import { useWalletStore } from "@/stores/wallet";
-import { ref, onBeforeMount, onMounted } from "vue";
+import { ref, onBeforeMount } from "vue";
+import { useRoute } from "vue-router";
 import { Tickets } from "@/services";
 import { useQRCode } from "@vueuse/integrations/useQRCode";
 
-const wallet = useWalletStore();
+const route = useRoute();
 
 let tickets = ref("");
 let checkInQr = ref({});
 let showQr = ref(false);
 
 onBeforeMount(async () => {
-  tickets.value = await Tickets.getUserTickets(wallet.user);
+  tickets.value = await Tickets.getUserTickets(route.params.userId);
 });
 
 function generateQR(ticket) {

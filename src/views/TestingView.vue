@@ -5,7 +5,7 @@ import { useCounterStore } from "@/stores/counter";
 import { BrowserProvider, Contract, parseEther } from "ethers";
 import EventProxy from "@/assets/abi/EventImplementation";
 import axios from "axios";
-import QrScanner from "qr-scanner";
+import { QrcodeStream } from "vue-qrcode-reader";
 
 const provider = new BrowserProvider(window.ethereum);
 
@@ -45,23 +45,14 @@ async function fetchPosts() {
   }
 }
 
-// qr scanner
-let qrScan = ref();
-
-function test() {
-  // console.log(qrScan.value);
-  qrScanner.start();
+function onDetect(qrValue) {
+  console.log(qrValue[0].rawValue);
 }
-let qrScanner;
-onMounted(() => {
-  qrScanner = new QrScanner(
-    qrScan.value,
-    (result) => console.log("decoded qr code:", result),
-    {
-      /* your options or returnDetailedScanResult: true if you're not specifying any other options */
-    }
-  );
-});
+
+let toggle = ref(false);
+function start() {
+  toggle.value = !toggle.value;
+}
 </script>
 
 <template>
@@ -79,10 +70,9 @@ onMounted(() => {
       </button>
       <p v-if="posts">{{ posts[2] }}</p>
 
-      <button @click="test" class="btn btn-primary">QR scan</button>
+      <button @click="start" class="btn btn-primary">QR scan</button>
 
-      <!-- {{ qrText }} -->
-      <video ref="qrScan"></video>
+      <qrcode-stream v-if="toggle" @detect="onDetect"></qrcode-stream>
     </div>
   </main>
 </template>

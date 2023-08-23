@@ -43,7 +43,7 @@ function generateQR(ticket) {
               <div
                 class="col-4 rounded-end d-flex flex-column align-items-center justify-content-center"
                 data-bs-toggle="modal"
-                data-bs-target="#ticketModal"
+                :data-bs-target="`#ticketModal-${ticket.id}`"
               >
                 <div class="test row h-100 w-100">
                   <div class="col flex-grow-0 triangle-pattern"></div>
@@ -57,7 +57,7 @@ function generateQR(ticket) {
 
           <div
             class="modal fade"
-            id="ticketModal"
+            :id="`ticketModal-${ticket.id}`"
             tabindex="-1"
             aria-labelledby="exampleModalLabel"
             aria-hidden="true"

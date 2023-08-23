@@ -9,6 +9,7 @@ import _ from "lodash";
 import { Dropdown } from "bootstrap/dist/js/bootstrap.js";
 import { vOnClickOutside } from "@vueuse/components";
 import { Venues, Artists, Events, Exchange } from "@/services";
+
 // import formData from "@/stores/event";
 // let venues = [
 //   {
@@ -502,11 +503,15 @@ function returnHome() {
 
         <!-- form right col; picture upload -->
         <div
-          class="col-sm-12 col-lg d-flex flex-column mt-md-3 mt-4 justify-content-center"
+          class="col-sm-12 col-lg d-flex flex-column mt-md-3 mt-4 text-center"
         >
-          <div class="text-center">
+          <div>
             <p>Poster</p>
-            <img class="w-75" src="https://placeholder.pics/svg/300x200" />
+            <!-- <img class="w-75" src="https://placeholder.pics/svg/300x200" /> -->
+            <img
+              class="w-75 p-3 border border-2"
+              src="@/assets/img-placeholder.svg"
+            />
           </div>
         </div>
 
@@ -641,7 +646,13 @@ function returnHome() {
         >
           <div class="text-center">
             <p>Ilustracija NFT-a</p>
-            <img src="https://placeholder.pics/svg/200x300" />
+            <!-- <img src="https://placeholder.pics/svg/200x300" /> -->
+            <img
+              width="200"
+              height="300"
+              class="border border-2 p-3"
+              src="@/assets/img-placeholder.svg"
+            />
           </div>
         </div>
 

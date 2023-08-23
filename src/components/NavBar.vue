@@ -262,7 +262,7 @@ async function disconnect() {
               data-bs-dismiss="offcanvas"
               data-bs-target="#offcanvasExample"
             >
-              <i class="bi bi-ticket-perforated me-2"></i>Skeniraj ulaznice
+              <i class="bi bi-qr-code-scan me-2"></i>Skeniraj ulaznice
             </button>
           </div>
 

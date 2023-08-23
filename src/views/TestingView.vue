@@ -91,7 +91,7 @@ function start() {
 </template>
 
 <style scoped>
-.qr-wrapper >>> video {
+.qr-wrapper :deep() video {
   width: 50%;
 }
 </style>

@@ -81,10 +81,11 @@ async function buyTicket(ticket) {
       <!-- {{ event }} -->
       <div class="row mb-4">
         <div class="col-lg-6">
-          <img
+          <!-- <img
             class="w-100 mb-3 mb-lg-0"
             src="https://placeholder.pics/svg/300x200"
-          />
+          /> -->
+          <img class="w-100 mb-3 mb-lg-0" src="@/assets/img-placeholder.svg" />
         </div>
         <div class="col-lg-6 my-auto">
           <h2>{{ event.name }}</h2>
@@ -151,7 +152,8 @@ async function buyTicket(ticket) {
           </div>
 
           <h4 class="my-3">Mapa prostora</h4>
-          <img class="w-100" src="https://placeholder.pics/svg/300x200" />
+          <!-- <img class="w-100" src="https://placeholder.pics/svg/300x200" /> -->
+          <img src="@/assets/img-placeholder.svg" />
         </div>
       </div>
     </div>

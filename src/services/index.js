@@ -160,7 +160,7 @@ let Tickets = {
           }).format(doc.startTime * 1000),
         };
       });
-      console.log(res.data[0]);
+      console.log(res.data);
 
       return tickets;
     } catch (error) {

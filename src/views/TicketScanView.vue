@@ -71,10 +71,12 @@ function paintOutline(detectedCodes, ctx) {
         </div>
         <img
           v-else
-          src="https://picsum.photos/200/200"
+          src="@/assets/qr-scan.svg"
+          height="250"
           class="card-img-top"
           alt="..."
         />
+
         <div class="card-body">
           <div v-show="alertToggle" class="alert alert-primary" role="alert">
             Ulaznica skenirana! ({{ timer }})

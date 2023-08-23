@@ -3,6 +3,7 @@ import { ref, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
 import { Tickets, Backend } from "@/services";
 import { useQRCode } from "@vueuse/integrations/useQRCode";
+// import { Modal } from "bootstrap/dist/js/bootstrap.js";
 
 const route = useRoute();
 
@@ -18,6 +19,10 @@ function generateQR(ticket) {
   // let baseURL = import.meta.env.VITE_AXIOS_URL;
   // console.log("vrijednost qr koda: ", baseURL + "tickets/" + ticket.id);
   // checkInQr.value = useQRCode(baseURL + "tickets/" + ticket.id);
+  const myModalEl = document.getElementById(`ticketModal-${ticket.id}`);
+  myModalEl.addEventListener("hidden.bs.modal", (event) => {
+    showQr.value = false;
+  });
   checkInQr.value = useQRCode(ticket.id);
 
   showQr.value = true;

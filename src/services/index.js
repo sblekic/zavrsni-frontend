@@ -9,15 +9,21 @@ let Backend = axios.create({
 let Exchange = {
   async eurToEth() {
     let response = await axios.get(
-      "https://api.coinbase.com/v2/exchange-rates?currency=EUR"
+      "https://min-api.cryptocompare.com/data/price?fsym=EUR&tsyms=ETH,USD,MATIC"
     );
-    let rate = response.data.data.rates.ETH;
+    let rate = response.data.ETH;
     console.log("rate", rate);
     let wei = parseFloat(rate) * 10 ** 18;
     return wei;
-    // console.log("rate in wei", wei);
-    // let exchange = eur * wei;
-    // return exchange;
+  },
+  async eurToMatic() {
+    let response = await axios.get(
+      "https://min-api.cryptocompare.com/data/price?fsym=EUR&tsyms=ETH,USD,MATIC"
+    );
+    let rate = response.data.MATIC;
+    console.log("rate", rate);
+    let wei = parseFloat(rate) * 10 ** 18;
+    return wei;
   },
 };
 // naš objekt za sve pozive koji se dotiču `Post`ova

@@ -10,7 +10,12 @@ import { QrcodeStream } from "vue-qrcode-reader";
 const provider = new BrowserProvider(window.ethereum);
 
 async function exchange() {
-  console.log(await Exchange.eurToEth(30));
+  console.log(await Exchange.eurToMatic());
+  // console.log(
+  //   await axios.get(
+  //     "https://min-api.cryptocompare.com/data/price?fsym=EUR&tsyms=ETH,USD,MATIC"
+  //   )
+  // );
 }
 
 async function postTicketMetadata(ticketId) {

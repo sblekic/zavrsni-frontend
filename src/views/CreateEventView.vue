@@ -277,7 +277,7 @@ let exchangeRateWei;
 async function ethCreateEvent() {
   // toggle vrijednost koja skriva form i prikazuje progress bar
   isSubmitted.value = true;
-  exchangeRateWei = await Exchange.eurToEth();
+  exchangeRateWei = await Exchange.eurToMatic();
   let signer = await provider.getSigner();
   let contract = new Contract(
     EventFactory.contractAddress,

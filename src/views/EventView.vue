@@ -13,7 +13,7 @@ const route = useRoute();
 function weiToEth(price) {
   // js implicit string to number conversion
   let temp = price * 10 ** -18;
-  return Math.round(temp * 100000) / 100000;
+  return Math.round(temp * 1000000) / 1000000;
 }
 
 onBeforeMount(async () => {
@@ -107,7 +107,8 @@ async function buyTicket(ticket) {
             <tr v-for="ticket in event.tickets">
               <td>{{ ticket.type }}</td>
               <td class="text-center">
-                {{ ticket.eurPrice }} EUR ~ {{ weiToEth(ticket.weiPrice) }} ETH
+                {{ ticket.eurPrice }} EUR ~
+                {{ weiToEth(ticket.weiPrice) }} MATIC
               </td>
               <td class="text-center">
                 <button @click="buyTicket(ticket)" class="btn btn-primary">

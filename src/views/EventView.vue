@@ -131,7 +131,9 @@ async function buyTicket(ticket) {
               <img
                 style="min-height: 12vh"
                 class="img-fluid"
-                src="https://picsum.photos/200/100"
+                :src="`https://picsum.photos/200/100?random=${
+                  Math.floor(Math.random() * 100) + 10
+                }`"
               />
             </div>
             <div class="col text-center">

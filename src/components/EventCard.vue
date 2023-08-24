@@ -7,11 +7,15 @@ defineEmits(["sendId"]);
   <div class="col-4 pe-0">
     <img
       class="img-fluid rounded-start d-none d-sm-inline h-100"
-      src="https://picsum.photos/430/180"
+      :src="`https://picsum.photos/430/180?random=${
+        Math.floor(Math.random() * 100) + 10
+      }`"
     />
     <img
       class="img-fluid rounded-start d-sm-none h-100"
-      src="https://picsum.photos/200/280"
+      :src="`https://picsum.photos/200/280?random=${
+        Math.floor(Math.random() * 100) + 10
+      }`"
     />
   </div>
   <div

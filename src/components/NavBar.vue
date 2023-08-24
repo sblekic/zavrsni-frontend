@@ -3,8 +3,11 @@ import { BrowserProvider } from "ethers";
 import { Auth } from "@/services";
 import { useWalletStore } from "@/stores/wallet";
 import { Modal } from "bootstrap/dist/js/bootstrap.js";
-import { onUnmounted, ref, watch } from "vue";
+import { Dropdown } from "bootstrap/dist/js/bootstrap.js";
+import _ from "lodash";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import router from "@/router";
+import { Events } from "@/services";
 
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
@@ -123,6 +126,42 @@ async function disconnect() {
   // reset localHost/pinia wallet
   wallet.$reset();
 }
+
+let searchTerm = ref("");
+let bsSearchDropdown;
+let foundEvents = ref({ isNotFound: false });
+
+onMounted(() => {
+  bsSearchDropdown = Dropdown.getOrCreateInstance("#search-dropdown");
+});
+
+watch(
+  searchTerm,
+  _.debounce(async (newTerm) => {
+    if (newTerm.length > 1) {
+      await fetchEvent(newTerm);
+      console.log("trazim");
+    } else bsSearchDropdown.hide();
+  }, 500)
+);
+
+async function fetchEvent(searchTerm) {
+  foundEvents.value = await Events.getEvents(searchTerm);
+  if (foundEvents.value.length > 0) {
+    // ako sam odabrao iz liste onda searchTerm ce biti isti kao i vrijednost iz baze
+    if (foundEvents.value[0].name === searchTerm) return;
+    // prvi prikaz dropdowna nakon što je utipkano 3 slova (postavljeno u watcher )
+    else bsSearchDropdown.show();
+  } else {
+    // ako nema rezultata obavijesti korisnika
+    foundEvents.value = { isNotFound: true };
+    bsSearchDropdown.show();
+  }
+}
+
+function openResult(eventId) {
+  router.push(`/${eventId}`);
+}
 </script>
 
 <template>
@@ -140,12 +179,14 @@ async function disconnect() {
       >
         <div class="input-group">
           <input
+            v-model="searchTerm"
             type="search"
             class="form-control"
             placeholder="Traži po izvođaču ili lokaciji"
             aria-label="Recipient's username"
             aria-describedby="button-addon2"
           />
+
           <button
             class="btn btn-outline-primary"
             type="button"
@@ -153,6 +194,19 @@ async function disconnect() {
           >
             <i class="bi bi-search"></i>
           </button>
+
+          <ul class="search-results dropdown-menu w-100" id="search-dropdown">
+            <li v-if="!foundEvents.isNotFound" v-for="event in foundEvents">
+              <a :href="`/${event.id}`" class="dropdown-item">
+                {{ event.name }}
+              </a>
+            </li>
+            <li v-else>
+              <button class="dropdown-item disabled">
+                Nema pronađenih rezultata
+              </button>
+            </li>
+          </ul>
         </div>
       </form>
 
@@ -349,4 +403,8 @@ async function disconnect() {
   </div>
 </template>
 
-<style></style>
+<style scoped>
+.search-results {
+  margin-top: 40px;
+}
+</style>

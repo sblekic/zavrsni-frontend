@@ -39,8 +39,19 @@ let Posts = {
 };
 
 let Events = {
-  async getEvents() {
+  async getEvents(searchTerm) {
     try {
+      let options = {};
+
+      if (searchTerm) {
+        options.params = {
+          _any: searchTerm,
+        };
+        let response = await Backend.get("/events", options);
+        let searchResults = response.data;
+        return searchResults;
+      }
+
       let response = await Backend.get("/events");
       let events = response.data.map((doc) => {
         return {

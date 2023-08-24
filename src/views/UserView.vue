@@ -39,7 +39,10 @@ function generateQR(ticket) {
           <div class="card mb-3 mx-auto mx-lg-0" style="max-width: 540px">
             <div class="row g-0">
               <div class="col-8">
-                <div class="card-body">
+                <div
+                  class="card-body d-flex flex-column justify-content-center"
+                  style="min-height: 140px"
+                >
                   <h5 class="card-title">{{ ticket.eventName }}</h5>
                   <p class="card-text">{{ ticket.venue }}</p>
                 </div>
@@ -50,9 +53,11 @@ function generateQR(ticket) {
                 data-bs-toggle="modal"
                 :data-bs-target="`#ticketModal-${ticket.id}`"
               >
-                <div class="test row h-100 w-100">
+                <div class="ticket-pattern row h-100 w-100">
                   <div class="col flex-grow-0 triangle-pattern"></div>
-                  <div class="col show-details rounded-end py-4 text-center">
+                  <div
+                    class="col show-details rounded-end d-flex align-items-center justify-content-center"
+                  >
                     <i class="bi bi-ticket-perforated"></i>
                   </div>
                 </div>
@@ -139,12 +144,12 @@ function generateQR(ticket) {
   background-position: right top;
 }
 
-.test:hover .show-details {
+.ticket-pattern:hover .show-details {
   background-color: #080b53;
   color: white;
 }
 
-.test:hover .triangle-pattern {
+.ticket-pattern:hover .triangle-pattern {
   background:
     linear-gradient(-45deg, #080b53 9px, rgba(125, 125, 125, 0) 0) 0 9px,
     linear-gradient(-135deg, #080b53 9px, rgba(125, 125, 125, 0) 0) 0 9px;

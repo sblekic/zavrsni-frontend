@@ -338,9 +338,7 @@ function returnHome() {
 <template>
   <main>
     <div class="container px-4">
-      <!-- {{ formData }}
-      <p class="mt-4">venue</p>
-      {{ venues }} -->
+      <!-- {{ formData }} -->
       <div class="d-flex mb-4 justify-content-center">
         <p class="display-4">Organiziraj koncert</p>
       </div>

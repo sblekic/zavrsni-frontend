@@ -22,8 +22,11 @@ watch(
 async function onDetect(qrValue) {
   console.log(qrValue[0].rawValue);
   let ticketId = qrValue[0].rawValue;
-  //   let res = await Tickets.scanTicket(ticketId);
-  //   console.log(res.data);
+  let properties = {
+    isScanned: true,
+  };
+  let res = await Tickets.patchTicketMeta(ticketId, properties);
+  console.log(res.data);
   alertToggle.value = !alertToggle.value;
   timer.value = 3;
 

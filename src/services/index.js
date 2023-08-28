@@ -134,9 +134,9 @@ let Events = {
 };
 
 let Tickets = {
-  async scanTicket(ticketId) {
+  async patchTicketMeta(ticketId, properties) {
     try {
-      return await Backend.patch(`tickets/${ticketId}`);
+      return await Backend.patch(`tickets/${ticketId}`, properties);
     } catch (error) {
       console.log(error);
     }
@@ -144,6 +144,13 @@ let Tickets = {
   async postTicketMeta(ticket) {
     try {
       return await Backend.post("/tickets", ticket);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  async setListing(ticket) {
+    try {
+      return await Backend.patch(`tickets/${ticketId}`);
     } catch (error) {
       console.log(error);
     }
@@ -177,7 +184,7 @@ let Tickets = {
           }).format(doc.startTime * 1000),
         };
       });
-      console.log(res.data);
+      // console.log(res.data);
 
       return tickets;
     } catch (error) {

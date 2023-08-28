@@ -31,7 +31,6 @@ async function postTicketMeta(tokenId, ticketType, price, owner) {
     city: event.value.venueInfo.address.city,
     eventAddress: route.params.eventId,
     owner: owner.toLowerCase(),
-    isScanned: false,
   };
   let res = await Tickets.postTicketMeta(ticketMeta);
   console.log(res.data);

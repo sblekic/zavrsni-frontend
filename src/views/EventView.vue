@@ -8,6 +8,7 @@ import { Events, Tickets } from "@/services";
 const provider = new BrowserProvider(window.ethereum);
 
 let event = ref({ venueInfo: { address: "" } });
+let listings = ref([]);
 const route = useRoute();
 
 function weiToEth(price) {
@@ -18,6 +19,7 @@ function weiToEth(price) {
 
 onBeforeMount(async () => {
   event.value = await Events.getEventById(route.params.eventId);
+  listings.value = await Tickets.getListings(route.params.eventId);
 });
 
 async function postTicketMeta(tokenId, ticketType, price, owner) {
@@ -34,6 +36,31 @@ async function postTicketMeta(tokenId, ticketType, price, owner) {
   };
   let res = await Tickets.postTicketMeta(ticketMeta);
   console.log(res.data);
+}
+
+async function secondarySale(listing) {
+  if (provider) {
+    let signer = await provider.getSigner();
+    let contract = new Contract(
+      route.params.eventId,
+      EventImplementation.abi,
+      signer
+    );
+    try {
+      await contract.secondarySale(listing.tokenId, { value: 11000000000000n });
+
+      contract.once("SecondarySale", async (tokenId) => {
+        console.log(`Preprodaja ulaznice # ${tokenId}}`);
+        let properties = {
+          owner: signer.address.toLowerCase(),
+          isListed: false,
+        };
+        await Tickets.patchTicketMeta(listing._id, properties);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 async function buyTicket(ticket) {
@@ -71,11 +98,17 @@ async function buyTicket(ticket) {
     }
   }
 }
+
+function shortenAddress(address) {
+  address = (address.slice(0, 5) + ".." + address.slice(-4)).toUpperCase();
+  return address;
+}
 </script>
 
 <template>
   <main>
     <div class="container">
+      {{ listings }}
       <!-- main info -->
       <!-- {{ event }} -->
       <div class="row mb-4">
@@ -110,7 +143,55 @@ async function buyTicket(ticket) {
                 {{ weiToEth(ticket.weiPrice) }} MATIC
               </td>
               <td class="text-center">
-                <button @click="buyTicket(ticket)" class="btn btn-primary">
+                <button
+                  v-if="ticket.supply"
+                  @click="buyTicket(ticket)"
+                  class="btn btn-primary"
+                >
+                  <i class="bi bi-cart-plus"></i>
+                </button>
+                <button v-else class="btn btn-secondary disabled">
+                  <i class="bi bi-cart-x"></i> Rasprodano
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- secondary market -->
+
+      <div class="row mt-4 mb-4 px-2">
+        <h2 class="ps-0 mb-3">
+          Ulaznice u preprodaji
+          <span class="badge text-bg-primary">{{ listings.length }}</span>
+        </h2>
+        <table class="table table-borderless table-hover align-middle">
+          <thead>
+            <tr>
+              <th scope="col">Korisnik</th>
+              <th scope="col">Ulaznice</th>
+              <th scope="col" class="text-center">Cijena</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody class="border-top">
+            <tr v-for="listing in listings">
+              <td>
+                <a
+                  class="text-decoration-none"
+                  :href="`https://mumbai.polygonscan.com/address/${listing.owner}`"
+                  >{{ shortenAddress(listing.owner) }}</a
+                >
+              </td>
+
+              <td>{{ listing.type }}</td>
+              <td class="text-center">
+                {{ listing.listingEurPrice }} EUR ~
+                {{ weiToEth(listing.listingWeiPrice) }} MATIC
+              </td>
+              <td class="text-center">
+                <button @click="secondarySale(listing)" class="btn btn-primary">
                   <i class="bi bi-cart-plus"></i>
                 </button>
               </td>

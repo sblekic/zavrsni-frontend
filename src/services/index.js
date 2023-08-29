@@ -134,6 +134,14 @@ let Events = {
 };
 
 let Tickets = {
+  async getListings(eventId) {
+    try {
+      let res = await Backend.get(`tickets/event/${eventId}`);
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
   async patchTicketMeta(ticketId, properties) {
     try {
       return await Backend.patch(`tickets/${ticketId}`, properties);
@@ -144,13 +152,6 @@ let Tickets = {
   async postTicketMeta(ticket) {
     try {
       return await Backend.post("/tickets", ticket);
-    } catch (error) {
-      console.log(error);
-    }
-  },
-  async setListing(ticket) {
-    try {
-      return await Backend.patch(`tickets/${ticketId}`);
     } catch (error) {
       console.log(error);
     }

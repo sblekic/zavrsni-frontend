@@ -6,7 +6,6 @@ import EventImplementation from "@/assets/abi/EventImplementation";
 import { useRoute } from "vue-router";
 import { Tickets, Exchange } from "@/services";
 import { useQRCode } from "@vueuse/integrations/useQRCode";
-import { parse } from "dotenv";
 import { Modal } from "bootstrap/dist/js/bootstrap.js";
 
 const route = useRoute();
@@ -72,6 +71,7 @@ async function sellTicket(eventId, maticPrice, tokenId, ticketType, ticketId) {
 
     try {
       console.log("seller address", await contract.ownerOf(tokenId));
+      // !!!!!! PROMJENI KADA SI GOTOV SA TESTIRANJEM!!!!!! namjerno su postavljene jako niske cijene jer faucet daje 1 matic/dan
       await contract.sellTicket(tokenId, 11000000000000n, ticketType);
       // await contract.sellTicket(
       //   tokenId,

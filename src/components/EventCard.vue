@@ -6,20 +6,20 @@ defineEmits(["sendId"]);
 <template>
   <div class="col-4 pe-0">
     <img
-      class="img-fluid rounded-start d-none d-sm-inline h-100"
+      class="img-fluid rounded-start d-none d-sm-inline h-100 shadow-sm"
       :src="`https://picsum.photos/430/180?random=${
         Math.floor(Math.random() * 100) + 10
       }`"
     />
     <img
-      class="img-fluid rounded-start d-sm-none h-100"
+      class="img-fluid rounded-start d-sm-none h-100 shadow-sm"
       :src="`https://picsum.photos/200/280?random=${
         Math.floor(Math.random() * 100) + 10
       }`"
     />
   </div>
   <div
-    class="col-8 d-flex flex-column border border-dark-subtle rounded-end justify-content-center"
+    class="col-8 d-flex flex-column border border-primary rounded-end justify-content-center shadow-sm"
   >
     <div class="row">
       <div class="col-lg-4 my-auto">

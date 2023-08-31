@@ -97,12 +97,15 @@ async function sellTicket(eventId, maticPrice, tokenId, ticketType, ticketId) {
       {{ tickets }}
       <div class="row">
         <div v-for="ticket in tickets" class="col-lg-6">
-          <div class="card mb-3 mx-auto mx-lg-0" style="max-width: 540px">
+          <div
+            class="card mb-3 mx-auto mx-lg-0 border-primary"
+            style="max-width: 540px"
+          >
             <div class="row g-0">
               <div class="col-8">
                 <div
                   class="card-body d-flex flex-column justify-content-center"
-                  style="min-height: 140px"
+                  style="min-height: 180px"
                 >
                   <h5 class="card-title">{{ ticket.eventName }}</h5>
                   <p class="card-text">{{ ticket.venue }}</p>

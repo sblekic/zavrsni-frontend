@@ -188,7 +188,7 @@ function openResult(eventId) {
           />
 
           <button
-            class="btn btn-outline-primary"
+            class="btn btn-outline-primary rounded-end"
             type="button"
             id="button-addon2"
           >
@@ -211,18 +211,17 @@ function openResult(eventId) {
       </form>
 
       <ul class="navbar-nav mx-2 d-none d-lg-block">
-        <li class="nav-item">
-          <RouterLink :to="{ name: 'CreateEvent' }" class="nav-link">
-            <i class="bi bi-calendar-event me-2"></i> Organiziraj koncert
+        <li class="nav-item fw-semibold">
+          <RouterLink :to="{ name: 'BrowseEvents' }" class="nav-link">
+            <i class="bi bi-music-note me-2"></i>Događaji
           </RouterLink>
         </li>
       </ul>
 
-      <!-- izbrisi kad si gotov -->
-      <ul class="navbar-nav mx-2 d-none d-lg-block">
+      <ul class="navbar-nav mx-2 fw-semibold d-none d-xl-block">
         <li class="nav-item">
-          <RouterLink :to="{ name: 'dev' }" class="nav-link">
-            <i class="bi bi-code-square"></i> Testiranje
+          <RouterLink :to="{ name: 'CreateEvent' }" class="nav-link">
+            <i class="bi bi-calendar-event me-2"></i>Organiziraj koncert
           </RouterLink>
         </li>
       </ul>
@@ -250,7 +249,7 @@ function openResult(eventId) {
         <li class="nav-item">
           <button
             type="button"
-            class="btn btn-outline-primary"
+            class="btn btn-outline-primary fw-semibold"
             data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasExample"
           >
@@ -266,7 +265,7 @@ function openResult(eventId) {
 
       <!-- Moj profil offcanvas -->
       <div
-        class="offcanvas-xxxl offcanvas-end"
+        class="offcanvas-xxxl offcanvas-end bg-body-secondary"
         tabindex="-1"
         id="offcanvasExample"
         aria-labelledby="offcanvasExampleLabel"
@@ -298,6 +297,16 @@ function openResult(eventId) {
 
         <!-- offcanvas body -->
         <div class="offcanvas-body primary">
+          <div class="d-flex my-1">
+            <button
+              @click="router.push('/events')"
+              class="btn btn-primary flex-grow-1"
+              data-bs-dismiss="offcanvas"
+              data-bs-target="#offcanvasExample"
+            >
+              <i class="bi bi-music-note me-2"></i>Događaji
+            </button>
+          </div>
           <div class="d-flex my-1">
             <button
               @click="router.push(`/user/${wallet.user}`)"

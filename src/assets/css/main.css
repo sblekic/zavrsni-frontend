@@ -6,8 +6,20 @@
   padding-top: 4.5rem;
   background-color: silver;
 } */
-
+html {
+  height: 100%;
+  --bs-bg-opacity: 1;
+  background-color: rgba(
+    var(--bs-tertiary-bg-rgb),
+    var(--bs-bg-opacity)
+  ) !important;
+}
 main {
-  margin-top: 5vh;
+  padding-top: 5vh;
   margin-bottom: 5vh;
+  --bs-bg-opacity: 1;
+  background-color: rgba(
+    var(--bs-tertiary-bg-rgb),
+    var(--bs-bg-opacity)
+  ) !important;
 }

@@ -108,9 +108,7 @@ function shortenAddress(address) {
 <template>
   <main>
     <div class="container">
-      {{ listings }}
       <!-- main info -->
-      <!-- {{ event }} -->
       <div class="row mb-4">
         <div class="col-lg-6">
           <!-- <img
@@ -127,7 +125,7 @@ function shortenAddress(address) {
       </div>
       <!-- prodaja ulaznica -->
       <div class="row mt-5 mb-4 px-2">
-        <table class="table table-borderless table-hover align-middle">
+        <table class="table table-borderless table-hover align-middle border">
           <thead>
             <tr>
               <th scope="col" width="40%">Ulaznice</th>
@@ -166,7 +164,10 @@ function shortenAddress(address) {
           Ulaznice u preprodaji
           <span class="badge text-bg-primary">{{ listings.length }}</span>
         </h2>
-        <table class="table table-borderless table-hover align-middle">
+        <table
+          v-show="listings.length"
+          class="table table-borderless table-hover align-middle"
+        >
           <thead>
             <tr>
               <th scope="col">Korisnik</th>

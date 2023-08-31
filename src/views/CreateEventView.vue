@@ -338,10 +338,9 @@ function returnHome() {
 <template>
   <main>
     <div class="container px-4">
-      <!-- {{ formData }} -->
-      <div class="d-flex mb-4 justify-content-center">
-        <p class="display-4">Organiziraj koncert</p>
-      </div>
+      <h1 class="display-4 fw-semibold text-primary text-center my-5">
+        Organiziraj koncert
+      </h1>
       <!-- form za događaj -->
       <div v-if="formToggle" class="row">
         <!-- form left col; event data -->

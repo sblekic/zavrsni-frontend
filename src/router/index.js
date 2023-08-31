@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
+import BrowseEventsView from "@/views/BrowseEventsView.vue";
 import CreateEventView from "@/views/CreateEventView.vue";
 import EventView from "@/views/EventView.vue";
 import UserView from "@/views/UserView.vue";
@@ -15,12 +16,17 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: "/events",
+      name: "BrowseEvents",
+      component: BrowseEventsView,
+    },
+    {
       path: "/create-event",
       name: "CreateEvent",
       component: CreateEventView,
     },
     {
-      path: "/:eventId",
+      path: "/events/:eventId",
       name: "EventDetails",
       component: EventView,
     },

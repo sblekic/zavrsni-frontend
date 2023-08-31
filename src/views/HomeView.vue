@@ -163,7 +163,6 @@ onMounted(async () => {
 <style scoped>
 .scrolling-wrapper {
   overflow-x: auto;
-  /* overflow-y: scroll; */
   scrollbar-width: thin;
 }
 
@@ -174,12 +173,12 @@ onMounted(async () => {
   border-radius: 1rem;
   background-position: center;
   background-size: cover;
-  transition: all 0.2s ease-in-out !important;
+  /* transition: all 0.2s ease-in-out !important;
   &:hover {
     transform: translateY(-5px);
     box-shadow: none;
     opacity: 0.9;
-  }
+  } */
 }
 
 .card-0 {

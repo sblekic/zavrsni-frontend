@@ -94,168 +94,183 @@ async function sellTicket(eventId, maticPrice, tokenId, ticketType, ticketId) {
 <template>
   <main>
     <div class="container">
-      {{ tickets }}
-      <div class="row">
-        <div v-for="ticket in tickets" class="col-lg-6">
-          <div
-            class="card mb-3 mx-auto mx-lg-0 border-primary"
-            style="max-width: 540px"
-          >
-            <div class="row g-0">
-              <div class="col-8">
-                <div
-                  class="card-body d-flex flex-column justify-content-center"
-                  style="min-height: 180px"
-                >
-                  <h5 class="card-title">{{ ticket.eventName }}</h5>
-                  <p class="card-text">{{ ticket.venue }}</p>
-                </div>
-              </div>
-
-              <div
-                class="col-4 rounded-end d-flex flex-column align-items-center justify-content-center"
-                data-bs-toggle="modal"
-                :data-bs-target="`#ticketModal-${ticket.id}`"
-              >
-                <div class="ticket-pattern row h-100 w-100">
-                  <div class="col flex-grow-0 triangle-pattern"></div>
+      <h1 class="fs-1 fw-bold text-primary text-center mb-5">Moje ulaznice</h1>
+      <div v-if="tickets.length">
+        <div class="row">
+          <div v-for="ticket in tickets" class="col-lg-6">
+            <div
+              class="card mb-3 mx-auto mx-lg-0 border-primary"
+              style="max-width: 540px"
+            >
+              <div class="row g-0">
+                <div class="col-8">
                   <div
-                    class="col show-details rounded-end d-flex align-items-center justify-content-center"
+                    class="card-body d-flex flex-column justify-content-center"
+                    style="min-height: 180px"
                   >
-                    <i class="bi bi-ticket-perforated"></i>
+                    <h5 class="card-title">{{ ticket.eventName }}</h5>
+                    <p class="card-text">{{ ticket.venue }}</p>
+                  </div>
+                </div>
+
+                <div
+                  class="col-4 rounded-end d-flex flex-column align-items-center justify-content-center"
+                  data-bs-toggle="modal"
+                  :data-bs-target="`#ticketModal-${ticket.id}`"
+                >
+                  <div class="ticket-pattern row h-100 w-100">
+                    <div class="col flex-grow-0 triangle-pattern"></div>
+                    <div
+                      class="col show-details rounded-end d-flex align-items-center justify-content-center"
+                    >
+                      <i class="bi bi-ticket-perforated"></i>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div
-            class="modal fade"
-            :id="`ticketModal-${ticket.id}`"
-            tabindex="-1"
-            aria-labelledby="exampleModalLabel"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog modal-sm">
-              <div class="modal-content">
-                <div
-                  class="modal-header border-bottom border-3 border-primary mb-3"
-                >
-                  <h1 class="modal-title fs-2" id="exampleModalLabel">
-                    Ulaznica #{{ ticket.tokenId }}
-                  </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div class="modal-body">
-                  <div class="display-6 text-end mb-3">
-                    {{ ticket.eventName }}
-                  </div>
-                  <div class="text-end mb-5">{{ ticket.customDate }}</div>
-                  <div class="row text-center mb-4">
-                    <div class="col">
-                      <h6 class="fw-lighter">CIJENA</h6>
-                      <h4>{{ ticket.price }}€</h4>
-                    </div>
-                    <div class="col">
-                      <h6 class="fw-lighter">POČETAK</h6>
-                      <h4>{{ ticket.start }}</h4>
-                    </div>
-                    <div class="col">
-                      <h6 class="fw-lighter">KATEGORIJA</h6>
-                      <h4>{{ ticket.type }}</h4>
-                    </div>
-                  </div>
-                  <h5>{{ ticket.venue }},</h5>
-                  <h5>{{ ticket.city }}</h5>
-                </div>
-                <div class="modal-footer justify-content-center">
-                  <div v-if="!showQr" class="d-flex flex-column flex-grow-1">
+            <div
+              class="modal fade"
+              :id="`ticketModal-${ticket.id}`"
+              tabindex="-1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div
+                    class="modal-header border-bottom border-3 border-primary mb-3"
+                  >
+                    <h1 class="modal-title fs-2" id="exampleModalLabel">
+                      Ulaznica #{{ ticket.tokenId }}
+                    </h1>
                     <button
-                      @click="generateQR(ticket)"
                       type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="display-6 text-end mb-3">
+                      {{ ticket.eventName }}
+                    </div>
+                    <div class="text-end mb-5">{{ ticket.customDate }}</div>
+                    <div class="row text-center mb-4">
+                      <div class="col">
+                        <h6 class="fw-lighter">CIJENA</h6>
+                        <h4>{{ ticket.price }}€</h4>
+                      </div>
+                      <div class="col">
+                        <h6 class="fw-lighter">POČETAK</h6>
+                        <h4>{{ ticket.start }}</h4>
+                      </div>
+                      <div class="col">
+                        <h6 class="fw-lighter">KATEGORIJA</h6>
+                        <h4>{{ ticket.type }}</h4>
+                      </div>
+                    </div>
+                    <h5>{{ ticket.venue }},</h5>
+                    <h5>{{ ticket.city }}</h5>
+                  </div>
+                  <div class="modal-footer justify-content-center">
+                    <div v-if="!showQr" class="d-flex flex-column flex-grow-1">
+                      <button
+                        @click="generateQR(ticket)"
+                        type="button"
+                        class="btn btn-primary"
+                      >
+                        Prikaži QR kod
+                      </button>
+                      <button
+                        class="btn btn-secondary mt-2"
+                        :data-bs-target="`#saleForm-${ticket.id}`"
+                        data-bs-toggle="modal"
+                      >
+                        Prodaj ulaznicu
+                      </button>
+                    </div>
+
+                    <img v-else :src="checkInQr.value" alt="QR Code" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="modal fade"
+              :id="`saleForm-${ticket.id}`"
+              aria-hidden="true"
+              aria-labelledby="exampleModalToggleLabel2"
+              tabindex="-1"
+            >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-3" id="exampleModalToggleLabel2">
+                      Preprodaja ulaznice
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="input-group my-3">
+                      <input
+                        v-model="resellPrice"
+                        type="text"
+                        class="form-control col"
+                        placeholder="Cijena preprodaje €"
+                      />
+                      <span class="input-group-text col" id="basic-addon2"
+                        >{{ maticPrice }} MATIC</span
+                      >
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      v-if="!isPostingForm"
+                      @click="
+                        sellTicket(
+                          ticket.eventId,
+                          maticPrice,
+                          ticket.tokenId,
+                          ticket.type,
+                          ticket.id
+                        )
+                      "
                       class="btn btn-primary"
                     >
-                      Prikaži QR kod
+                      Predaj zahtjev
                     </button>
-                    <button
-                      class="btn btn-secondary mt-2"
-                      :data-bs-target="`#saleForm-${ticket.id}`"
-                      data-bs-toggle="modal"
+
+                    <div
+                      v-else
+                      class="spinner-border text-primary"
+                      role="status"
                     >
-                      Prodaj ulaznicu
-                    </button>
-                  </div>
-
-                  <img v-else :src="checkInQr.value" alt="QR Code" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="modal fade"
-            :id="`saleForm-${ticket.id}`"
-            aria-hidden="true"
-            aria-labelledby="exampleModalToggleLabel2"
-            tabindex="-1"
-          >
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-3" id="exampleModalToggleLabel2">
-                    Preprodaja ulaznice
-                  </h1>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div class="modal-body">
-                  <div class="input-group my-3">
-                    <input
-                      v-model="resellPrice"
-                      type="text"
-                      class="form-control col"
-                      placeholder="Cijena preprodaje €"
-                    />
-                    <span class="input-group-text col" id="basic-addon2"
-                      >{{ maticPrice }} MATIC</span
-                    >
-                    {{ ticket }}
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button
-                    v-if="!isPostingForm"
-                    @click="
-                      sellTicket(
-                        ticket.eventId,
-                        maticPrice,
-                        ticket.tokenId,
-                        ticket.type,
-                        ticket.id
-                      )
-                    "
-                    class="btn btn-primary"
-                  >
-                    Predaj zahtjev
-                  </button>
-
-                  <div v-else class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      <div v-else>
+        <p class="lead text-center">
+          Trenutno nemaš kupljenih ulaznica,
+          <RouterLink
+            class="fw-semibold text-decoration-none"
+            :to="{ name: 'BrowseEvents' }"
+            >Počasti se novim iskutvom.
+          </RouterLink>
+        </p>
       </div>
     </div>
   </main>

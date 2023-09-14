@@ -197,7 +197,7 @@ function openResult(eventId) {
 
           <ul class="search-results dropdown-menu w-100" id="search-dropdown">
             <li v-if="!foundEvents.isNotFound" v-for="event in foundEvents">
-              <a :href="`/${event.id}`" class="dropdown-item">
+              <a :href="`/events/${event.id}`" class="dropdown-item">
                 {{ event.name }}
               </a>
             </li>
@@ -297,7 +297,7 @@ function openResult(eventId) {
 
         <!-- offcanvas body -->
         <div class="offcanvas-body primary">
-          <div class="d-flex my-1">
+          <div class="d-flex my-1 d-lg-none">
             <button
               @click="router.push('/events')"
               class="btn btn-primary flex-grow-1"
@@ -329,7 +329,7 @@ function openResult(eventId) {
             </button>
           </div>
 
-          <div class="d-flex my-1 d-lg-none">
+          <div class="d-flex my-1 d-xl-none">
             <button
               @click="router.push('/create-event')"
               class="btn btn-primary flex-grow-1"

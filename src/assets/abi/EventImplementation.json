@@ -1,5 +1,5 @@
 {
-  "contractAddress": "0x632C9d432FB72091ab297b2A00F3c84eCe301fc5",
+  "contractAddress": "0x9024A0A0706ba96b95913E7378be64d1EF8EDCb7",
   "abi": [
     {
       "inputs": [],
@@ -264,11 +264,6 @@
       ],
       "name": "idToListedTicket",
       "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
         {
           "internalType": "address payable",
           "name": "seller",
@@ -547,6 +542,19 @@
         }
       ],
       "name": "setEventData",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "setOrganizer",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

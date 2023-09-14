@@ -47,7 +47,11 @@ async function secondarySale(listing) {
       signer
     );
     try {
-      await contract.secondarySale(listing.tokenId, { value: 11000000000000n });
+      let ticketStruct = await contract.idToListedTicket(`${listing.tokenId}`);
+      console.log(ticketStruct.price);
+      await contract.secondarySale(listing.tokenId, {
+        value: ticketStruct.price,
+      });
 
       contract.once("SecondarySale", async (tokenId) => {
         console.log(`Preprodaja ulaznice # ${tokenId}}`);
@@ -78,8 +82,9 @@ async function buyTicket(ticket) {
         "parsed value on frontend",
         parseUnits(`${ticket.weiPrice}`, "wei")
       );
+
       await contract.buyTicket(ticket.type, {
-        value: parseUnits(`${ticket.weiPrice}`, "wei"),
+        value: ticketStruct.price,
       });
 
       contract.once("TicketSale", async (proxyAddress, tokenId) => {

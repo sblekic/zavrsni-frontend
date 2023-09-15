@@ -8,8 +8,6 @@ export const useWalletStore = defineStore("wallet", {
     isAuthWarning: true,
     user: "",
     chainId: "",
-    //frontend; ako želim izbaciti warning da je user na krivom bc-u
-    networkError: undefined,
   }),
   persist: true,
 });

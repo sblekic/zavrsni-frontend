@@ -5,23 +5,74 @@ import { useWalletStore } from "@/stores/wallet";
 import { Modal } from "bootstrap/dist/js/bootstrap.js";
 import { Dropdown } from "bootstrap/dist/js/bootstrap.js";
 import _ from "lodash";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch, computed } from "vue";
 import router from "@/router";
 import { Events } from "@/services";
 
 const wallet = useWalletStore();
 const provider = new BrowserProvider(window.ethereum);
+const CHAIN_ID = import.meta.env.VITE_CHAIN_ID;
+const CHAIN_NAME = import.meta.env.VITE_CHAIN_NAME;
+let shortAddr = ref(shortenAddress(wallet.user));
+let searchTerm = ref("");
+let bsSearchDropdown;
+let foundEvents = ref({ isNotFound: false });
 
-console.log(
-  "test da provjerim ako netlify prepozna env var",
-  import.meta.env.VITE_AXIOS_URL
-);
+const isWrongNetwork = computed(() => {
+  return wallet.chainId !== CHAIN_ID;
+});
 
 // ako metamask nije instaliran ode cijela stranica
 if (window.ethereum) {
   // event listener za hendlanje promjena spojenih računa. emit svaki put kada se vracena vrijednost metode eth_accounts mijenja
   window.ethereum.on("accountsChanged", handleAccountsChanged);
+  window.ethereum.on("chainChanged", updateChainId);
 } else console.log("no mm detected");
+
+watch(
+  () => wallet.user,
+  (newUser) => {
+    shortAddr.value = shortenAddress(newUser);
+  }
+);
+
+watch(
+  searchTerm,
+  _.debounce(async (newTerm) => {
+    if (newTerm.length > 1) {
+      await fetchEvent(newTerm);
+      console.log("trazim");
+    } else bsSearchDropdown.hide();
+  }, 500)
+);
+
+onMounted(() => {
+  bsSearchDropdown = Dropdown.getOrCreateInstance("#search-dropdown");
+});
+
+// removal of event listeners
+onUnmounted(() => {
+  console.log("unMount");
+  ethereum.removeListener("accountsChanged", handleAccountsChanged);
+  ethereum.removeListener("chainChanged", updateChainId);
+});
+
+async function connectWallet() {
+  try {
+    const [address] = await provider.send("eth_requestAccounts", []);
+    // upravljanje DOM-a na temelju MM adrese.
+    wallet.chainId = await provider.send("eth_chainId", []);
+    wallet.user = address;
+    wallet.isConnected = true;
+    if (wallet.chainId !== CHAIN_ID) {
+      console.log("wrong network busta");
+      await changeNetwork();
+    }
+  } catch (error) {
+    // u slučaju odbijenog zahtjeva
+    console.log(error);
+  }
+}
 
 // accounts = eth_accounts
 function handleAccountsChanged(accounts) {
@@ -38,21 +89,50 @@ function handleAccountsChanged(accounts) {
   }
 }
 
-// removal of event listeners
-onUnmounted(() => {
-  console.log("unMount");
-  ethereum.removeListener("accountsChanged", handleAccountsChanged);
-});
+function updateChainId(id) {
+  console.log("CALL - chainchanged()");
+  wallet.chainId = id;
+  // po metamask dokumentaciji preporučeno je ponovno učitati stranicu.
+  window.location.reload();
+}
 
-async function connectWallet() {
+async function changeNetwork() {
   try {
-    const [address] = await provider.send("eth_requestAccounts", []);
-    // upravljanje DOM-a na temelju MM adrese.
-    wallet.user = address;
-    wallet.isConnected = true;
-  } catch (error) {
-    // u slučaju odbijenog zahtjeva
-    console.log(error);
+    console.log("call: changeNetwork()");
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: `${CHAIN_ID}` }],
+    });
+    wallet.chainId = CHAIN_ID;
+    window.location.reload();
+  } catch (switchError) {
+    // This error code indicates that the chain has not been added to MetaMask.
+    if (switchError.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: `${CHAIN_ID}`,
+              chainName: `${import.meta.env.VITE_CHAIN_NAME}`,
+              rpcUrls: [`${import.meta.env.VITE_RPC_URL}`],
+              nativeCurrency: {
+                name: `${import.meta.env.VITE_CHAIN_CURRENCY}`,
+                symbol: `${import.meta.env.VITE_CHAIN_CURRENCY}`,
+                decimals: 18,
+              },
+            },
+          ],
+        });
+        wallet.chainId = CHAIN_ID;
+        window.location.reload();
+      } catch (addError) {
+        // handle error in adding chain
+        console.log(addError);
+      }
+    }
+    // handle other "switch" errors
+    console.error("Greška: wallet_switchEthereumChain", switchError);
   }
 }
 
@@ -106,44 +186,10 @@ async function authenticateUser() {
   }
 }
 
-let shortAddr = ref(shortenAddress(wallet.user));
-
 function shortenAddress(address) {
   address = (address.slice(0, 5) + ".." + address.slice(-4)).toUpperCase();
   return address;
 }
-
-watch(
-  () => wallet.user,
-  (newUser) => {
-    shortAddr.value = shortenAddress(newUser);
-  }
-);
-
-async function disconnect() {
-  // brisanje jwt cookie
-  await Auth.logOut();
-  // reset localHost/pinia wallet
-  wallet.$reset();
-}
-
-let searchTerm = ref("");
-let bsSearchDropdown;
-let foundEvents = ref({ isNotFound: false });
-
-onMounted(() => {
-  bsSearchDropdown = Dropdown.getOrCreateInstance("#search-dropdown");
-});
-
-watch(
-  searchTerm,
-  _.debounce(async (newTerm) => {
-    if (newTerm.length > 1) {
-      await fetchEvent(newTerm);
-      console.log("trazim");
-    } else bsSearchDropdown.hide();
-  }, 500)
-);
 
 async function fetchEvent(searchTerm) {
   foundEvents.value = await Events.getEvents(searchTerm);
@@ -159,8 +205,11 @@ async function fetchEvent(searchTerm) {
   }
 }
 
-function openResult(eventId) {
-  router.push(`/${eventId}`);
+async function disconnect() {
+  // brisanje jwt cookiea
+  await Auth.logOut();
+  // reset localHost/pinia wallet
+  wallet.$reset();
 }
 </script>
 
@@ -365,6 +414,20 @@ function openResult(eventId) {
       </div>
     </div>
   </nav>
+
+  <div v-if="wallet.isConnected">
+    <div v-if="isWrongNetwork" class="navbar bg-body-tertiary">
+      <div class="container text-center">
+        <div class="alert alert-danger m-0 flex-grow-1" role="alert">
+          Novčanik je spojen na krivoj mreži. Kako bi stranica funkcionirala
+          predviđeni način, klikni
+          <a href="#" class="fw-bold" @click="changeNetwork($event)">ovdje</a>
+          kako biš se spojio na {{ CHAIN_NAME }} mreži
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal za potpis odnosno auth -->
   <!-- modal je izvan navbara jer mu smeta sticky position navbara -->
   <div class="modal fade" id="authModal" tabindex="-1">

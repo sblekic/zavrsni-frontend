@@ -1,35 +1,26 @@
-# frontend
+# Završni rad - Razvoj pametnih ugovora i poslužiteljskog sloja Web3 aplikacije za upravljanje ulaznicama
 
-This template should help get you started developing with Vue 3 in Vite.
+Završni rad se sastoji od frontend dijela koji se nalazi u ovom repozitoriju i backend dijela, koji se može pregledati [ovdje](https://github.com/sblekic/zavrsni-backend).
 
-## Recommended IDE Setup
+## Postavljanje projekta na lokalnom račualu
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+### Potreban softver
 
-## Customize configuration
+- [NodeJs](https://nodejs.org/en)
+- [Metamask](https://metamask.io/download/)
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### Napomena
 
-## Project Setup
+Potrebno je prvo pratiti instrukcije za [backend](https://github.com/sblekic/zavrsni-backend) projekta. Instanca backenda mora biti pokrenuta.
 
-```sh
+### Instalacija npm paketa
+
+```
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Pokretanje frontend poslužitelja
 
-```sh
+```
 npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```

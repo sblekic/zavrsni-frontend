@@ -136,7 +136,7 @@ let Events = {
 let Tickets = {
   async getListings(eventId) {
     try {
-      let res = await Backend.get(`tickets/event/${eventId}`);
+      let res = await Backend.get(`tickets/event/${eventId}/secondary`);
       return res.data;
     } catch (error) {
       console.log(error);
